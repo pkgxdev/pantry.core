@@ -131,6 +131,7 @@ jobs:
       - uses: teaxyz/setup@v0
         id: tea
         with:
+          srcroot: pantry
           prefix: ${{ github.workspace }}
 
       - name: overlay this pantry
@@ -148,9 +149,6 @@ jobs:
       - run: pantry/scripts/test.ts ${{ inputs.projects }}
 
   bottle:
-    defaults:
-      run:
-        working-directory: tea.xyz/var/pantry/scripts
     needs: [test, build]
     runs-on: ${{ matrix.platform.os }}
     strategy:
@@ -165,13 +163,18 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          path: tea.xyz/var/cli
+          path: pantry
+
+      - uses: actions/checkout@v3
+        with:
+          path: cli
           repository: teaxyz/cli
           token: ${{ secrets.TEMP_JACOBS_GITHUB_PAT }}
 
       - uses: teaxyz/setup@v0
         id: tea
         with:
+          srcroot: pantry
           prefix: ${{ github.workspace }}
 
       - uses: actions/download-artifact@v3
@@ -182,19 +185,19 @@ jobs:
       - run: tar xzf artifacts.tgz
         working-directory: ${{ steps.tea.outputs.prefix }}
 
-      - run: ./bottle.ts ${{ needs.build.outputs.built }}
+      - run: pantry/scripts/bottle.ts ${{ needs.build.outputs.built }}
         id: bottle-xz
         env:
           COMPRESSION: xz
 
-      - run: ./bottle.ts ${{ needs.build.outputs.built }}
+      - run: pantry/scripts/bottle.ts ${{ needs.build.outputs.built }}
         id: bottle-gz
         env:
           COMPRESSION: gz
 
       - name: upload bottles
         id: upload
-        run: ./upload.ts
+        run: pantry/scripts/upload.ts
           --pkgs ${{ needs.build.outputs.built }} ${{ needs.build.outputs.built }}
           --srcs ${{ needs.build.outputs.srcs }} ${{ needs.build.outputs.srcs }}
           --bottles ${{ steps.bottle-gz.outputs.bottles }} ${{ steps.bottle-xz.outputs.bottles }}
