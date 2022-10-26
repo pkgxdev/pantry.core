@@ -98,9 +98,6 @@ jobs:
   test:
     needs: [build]
     runs-on: ${{ matrix.os }}
-    defaults:
-      run:
-        working-directory: tea.xyz/var/pantry/scripts
     strategy:
       matrix:
         include:
@@ -118,11 +115,11 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          path: tea.xyz/var/pantries/self
+          path: pantry
 
       - uses: actions/checkout@v3
         with:
-          path: tea.xyz/var/cli
+          path: cli
           repository: teaxyz/cli
           token: ${{ secrets.TEMP_JACOBS_GITHUB_PAT }}
 
@@ -137,7 +134,9 @@ jobs:
           prefix: ${{ github.workspace }}
 
       - name: overlay this pantry
-        run: cp -Rvf $GITHUB_WORKSPACE/pantry/ /opt/tea.xyz/var/pantry
+        run: cp -Rv $GITHUB_WORKSPACE/pantry/ /opt/tea.xyz/var/pantry || true
+        # ^^ || true because I can’t figure out how to stop `cp` erroring
+        # because it doesn’t want to copy symlinks that already exist, eg. `src`
 
       - uses: actions/download-artifact@v3
         with:
@@ -146,7 +145,7 @@ jobs:
       - run: tar xzf artifacts.tgz
         working-directory: ${{ steps.tea.outputs.prefix }}
 
-      - run: ./test.ts ${{ inputs.projects }}
+      - run: pantry/scripts/test.ts ${{ inputs.projects }}
 
   bottle:
     defaults:
