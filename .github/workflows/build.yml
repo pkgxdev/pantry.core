@@ -6,9 +6,6 @@ on:
         required: true
         type: string
 
-env:
-  TEA_SECRET: ${{ secrets.TEA_SECRET }}
-
 jobs:
   build:
     runs-on: ${{ matrix.os }}
@@ -42,21 +39,6 @@ jobs:
           repository: teaxyz/cli
           token: ${{ secrets.TEMP_JACOBS_GITHUB_PAT }}
 
-      - run: |
-          if test -d $TEA_PREFIX/tea.xyz; then
-            find $TEA_PREFIX/tea.xyz -mindepth 1 -maxdepth 1 -not \( -path $TEA_PREFIX/tea.xyz/var \) -print0 | \
-            xargs -0 rm -rf
-          fi
-        if: ${{ matrix.tag }}
-        env:
-          TEA_PREFIX: /opt
-
-      - uses: teaxyz/setup@v0
-        id: tea
-        with:
-          srcroot: pantry
-          prefix: /opt
-
       - name: HACKS
         run: |
           case ${{ matrix.os }} in
@@ -70,22 +52,25 @@ jobs:
             #TODO stop using GHA images or chroot or something
             for x in /usr/local/*; do sudo mv $x /tmp; done
             ;;
-          *)
-            # self-hosted runner. noop
-            echo
-            ;;
           esac
 
-          rm -rf /opt/tea.xyz/var
-          ln -s $GITHUB_WORKSPACE /opt/tea.xyz/var
+      - uses: teaxyz/setup@v0
+        id: tea
+        with:
+          srcroot: pantry
+          prefix: /opt
+
+      - name: prepare pantries
+        run: |
+          tea --sync
+          cp -Rv $GITHUB_WORKSPACE/pantry/ /opt/tea.xyz/var/pantry || true
+        # ^^ || true because I can’t figure out how to stop `cp` erroring
+        # because it doesn’t want to copy symlinks that already exist, eg. `src`
 
       - run: pantry/scripts/sort.ts ${{ inputs.projects }}
         id: sorted
 
       - run: cli/scripts/install.ts ${{ steps.sorted.outputs.pre-install }}
-
-        #FIXME remove later
-      - run: find /opt -name bin -type d -exec find {} -type f -print0 \; | xargs -0 chmod 777
 
       - run: pantry/scripts/build.ts ${{ steps.sorted.outputs.pkgs }}
         id: build
@@ -133,7 +118,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          path: tea.xyz/var/pantry
+          path: tea.xyz/var/pantries/self
 
       - uses: actions/checkout@v3
         with:
@@ -146,20 +131,13 @@ jobs:
           apt-get --yes install libc-dev libstdc++-8-dev libgcc-8-dev
         if: ${{ matrix.container != '' }}
 
-      - run: |
-          if test -d $TEA_PREFIX/tea.xyz; then
-            find $TEA_PREFIX/tea.xyz -mindepth 1 -maxdepth 1 -not \( -path $TEA_PREFIX/tea.xyz/var \) -print0 | \
-            xargs -0 rm -rf
-          fi
-        if: ${{ matrix.tag }}
-        env:
-          TEA_PREFIX: ${{ github.workspace }}
-
       - uses: teaxyz/setup@v0
         id: tea
         with:
           prefix: ${{ github.workspace }}
-          srcroot: tea.xyz/var/pantry
+
+      - name: overlay this pantry
+        run: cp -Rvf $GITHUB_WORKSPACE/pantry/ /opt/tea.xyz/var/pantry
 
       - uses: actions/download-artifact@v3
         with:
@@ -188,28 +166,14 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          path: tea.xyz/var/pantry
-
-      - uses: actions/checkout@v3
-        with:
           path: tea.xyz/var/cli
           repository: teaxyz/cli
           token: ${{ secrets.TEMP_JACOBS_GITHUB_PAT }}
-
-      - run: |
-          if test -d $TEA_PREFIX/tea.xyz; then
-            find $TEA_PREFIX/tea.xyz -mindepth 1 -maxdepth 1 -not \( -path $TEA_PREFIX/tea.xyz/var \) -print0 | \
-            xargs -0 rm -rf
-          fi
-        if: ${{ matrix.platform.tag }}
-        env:
-          TEA_PREFIX: ${{ github.workspace }}
 
       - uses: teaxyz/setup@v0
         id: tea
         with:
           prefix: ${{ github.workspace }}
-          srcroot: tea.xyz/var/pantry
 
       - uses: actions/download-artifact@v3
         with:
