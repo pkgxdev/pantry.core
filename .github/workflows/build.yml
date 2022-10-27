@@ -77,14 +77,17 @@ jobs:
             -maxdepth 1 \
             -print0 | \
               xargs -0 -I{} cp -Rv {} /opt/tea.xyz/var/pantry
+          cp -a cli /opt/tea.xyz/var/
 
       - run: pantry/scripts/sort.ts ${{ inputs.projects }}
         id: sorted
+        working-directory: /opt/tea.xyz/var/
 
       - run: cli/scripts/install.ts ${{ steps.sorted.outputs.pre-install }}
 
       - run: pantry/scripts/build.ts ${{ steps.sorted.outputs.pkgs }}
         id: build
+        working-directory: /opt/tea.xyz/var/
         env:
           # GITHUB_TOKEN doesn't have private access to teaxyz/cli.
           # TODO restore to ${{ github.token }} when public
@@ -154,6 +157,7 @@ jobs:
             -maxdepth 1 \
             -print0 | \
               xargs -0 -I{} cp -Rv {} $GITHUB_WORKSPACE/tea.xyz/var/pantry
+          cp -a cli $GITHUB_WORKSPACE/tea.xyz/var
 
       - uses: actions/download-artifact@v3
         with:
@@ -163,6 +167,7 @@ jobs:
         working-directory: ${{ steps.tea.outputs.prefix }}
 
       - run: pantry/scripts/test.ts ${{ inputs.projects }}
+        working-directory: $GITHUB_WORKSPACE/tea.xyz/var
 
   bottle:
     needs: [test, build]
@@ -179,6 +184,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
+          repository: teaxyz/pantry.core
           path: pantry
 
       - uses: actions/checkout@v3
