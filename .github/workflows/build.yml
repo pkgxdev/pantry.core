@@ -78,6 +78,8 @@ jobs:
 
       - run: cli/scripts/install.ts ${{ steps.sorted.outputs.pre-install }}
 
+      - run: cat /opt/tea.xyz/var/pantry/projects/zlib.net/package.yml
+
       - run: /opt/tea.xyz/var/pantry/scripts/build.ts ${{ steps.sorted.outputs.pkgs }}
         id: build
         env:
