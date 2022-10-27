@@ -8,6 +8,7 @@ export async function overlay_this_pantry() {
     if (isFile) {
       const dst = to.join(path.relative({ to: self }))
       path.cp({ into: dst.parent().mkpath() })
+      console.log({ dst, path })
     }
   }
 }
