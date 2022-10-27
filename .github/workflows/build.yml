@@ -139,7 +139,7 @@ jobs:
       - uses: teaxyz/setup@v0
         id: tea
         with:
-          srcroot: $GITHUB_WORKSPACE/tea.xyz/var/pantry
+          srcroot: ${{ github.workspace }}/tea.xyz/var/pantry
           prefix: ${{ github.workspace }}
 
       - uses: actions/download-artifact@v3
