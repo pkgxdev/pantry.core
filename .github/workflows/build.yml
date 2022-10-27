@@ -43,6 +43,12 @@ jobs:
           repository: teaxyz/cli
           token: ${{ secrets.TEMP_JACOBS_GITHUB_PAT }}
 
+      - uses: teaxyz/setup@v0
+        id: tea
+        with:
+          srcroot: /opt/tea.xyz/var/pantry
+          prefix: /opt
+
       - name: HACKS
         run: |
           case ${{ matrix.os }} in
@@ -58,19 +64,7 @@ jobs:
             ;;
           esac
 
-      - uses: teaxyz/setup@v0
-        id: tea
-        with:
-          srcroot: pantry
-          prefix: /opt
-
-      - name: prepare pantries
-        run: |
-          # Ensures the pantry paths within our tea environment exist, and are as synchronized
-          # as might be needed in the future; we then copy the contents of our checkout into
-          # them (excluding symlinks -- `cp`s all handle them differently and they aren't needed
-          # here) to allow access to any new code being merged into PR/CI.
-          tea --sync
+      - run: |
           find $GITHUB_WORKSPACE/pantry \
             -not -type l \
             -mindepth 1 \
@@ -79,15 +73,13 @@ jobs:
               xargs -0 -I{} cp -Rv {} /opt/tea.xyz/var/pantry
           cp -a cli /opt/tea.xyz/var/
 
-      - run: pantry/scripts/sort.ts ${{ inputs.projects }}
+      - run: /opt/tea.xyz/var/pantry/scripts/sort.ts ${{ inputs.projects }}
         id: sorted
-        working-directory: /opt/tea.xyz/var/
 
       - run: cli/scripts/install.ts ${{ steps.sorted.outputs.pre-install }}
 
-      - run: pantry/scripts/build.ts ${{ steps.sorted.outputs.pkgs }}
+      - run: /opt/tea.xyz/var/pantry/scripts/build.ts ${{ steps.sorted.outputs.pkgs }}
         id: build
-        working-directory: /opt/tea.xyz/var/
         env:
           # GITHUB_TOKEN doesn't have private access to teaxyz/cli.
           # TODO restore to ${{ github.token }} when public
@@ -133,7 +125,7 @@ jobs:
 
       - uses: actions/checkout@v3
         with:
-          path: cli
+          path: tea.xyz/var/cli
           repository: teaxyz/cli
           token: ${{ secrets.TEMP_JACOBS_GITHUB_PAT }}
 
@@ -145,29 +137,16 @@ jobs:
       - uses: teaxyz/setup@v0
         id: tea
         with:
-          srcroot: pantry
+          srcroot: $GITHUB_WORKSPACE/tea.xyz/var/pantry
           prefix: ${{ github.workspace }}
-
-      - name: overlay this pantry
-        run: |
-          tea --sync
-          find $GITHUB_WORKSPACE/pantry \
-            -not -type l \
-            -mindepth 1 \
-            -maxdepth 1 \
-            -print0 | \
-              xargs -0 -I{} cp -Rv {} $GITHUB_WORKSPACE/tea.xyz/var/pantry
-          cp -a cli $GITHUB_WORKSPACE/tea.xyz/var
 
       - uses: actions/download-artifact@v3
         with:
           name: ${{ matrix.tag || matrix.os }}
 
       - run: tar xzf artifacts.tgz
-        working-directory: ${{ steps.tea.outputs.prefix }}
 
-      - run: pantry/scripts/test.ts ${{ inputs.projects }}
-        working-directory: $GITHUB_WORKSPACE/tea.xyz/var
+      - run: tea.xyz/var/pantry/scripts/test.ts ${{ inputs.projects }}
 
   bottle:
     needs: [test, build]
