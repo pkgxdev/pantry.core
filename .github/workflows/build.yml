@@ -106,6 +106,9 @@ jobs:
   test:
     needs: [build]
     runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        working-directory: tea.xyz/var/pantry
     strategy:
       matrix:
         include:
@@ -139,8 +142,17 @@ jobs:
       - uses: teaxyz/setup@v0
         id: tea
         with:
-          srcroot: ${{ github.workspace }}/pantry
+          srcroot: pantry
           prefix: ${{ github.workspace }}
+
+      - name: overlay our pantry
+        run: |
+          find $GITHUB_WORKSPACE/pantry \
+            -not -type l \
+            -mindepth 1 \
+            -maxdepth 1 \
+            -print0 | \
+              xargs -0 -I{} cp -Rv {} .
 
       - uses: actions/download-artifact@v3
         with:
@@ -148,11 +160,14 @@ jobs:
 
       - run: tar xzf artifacts.tgz
 
-      - run: pantry/scripts/test.ts ${{ inputs.projects }}
+      - run: scripts/test.ts ${{ inputs.projects }}
 
   bottle:
     needs: [test, build]
     runs-on: ${{ matrix.platform.os }}
+    defaults:
+      run:
+        working-directory: tea.xyz/var/pantry
     strategy:
       matrix:
         platform:
@@ -165,20 +180,28 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          repository: teaxyz/pantry.core
           path: pantry
 
       - uses: actions/checkout@v3
         with:
-          path: cli
+          path: tea.xyz/var/cli
           repository: teaxyz/cli
           token: ${{ secrets.TEMP_JACOBS_GITHUB_PAT }}
 
       - uses: teaxyz/setup@v0
         id: tea
         with:
-          srcroot: pantry
+          srcroot: .
           prefix: ${{ github.workspace }}
+
+      - name: overlay our pantry
+        run: |
+          find $GITHUB_WORKSPACE/pantry \
+            -not -type l \
+            -mindepth 1 \
+            -maxdepth 1 \
+            -print0 | \
+              xargs -0 -I{} cp -Rv {} .
 
       - uses: actions/download-artifact@v3
         with:
@@ -188,12 +211,12 @@ jobs:
       - run: tar xzf artifacts.tgz
         working-directory: ${{ steps.tea.outputs.prefix }}
 
-      - run: pantry/scripts/bottle.ts ${{ needs.build.outputs.built }}
+      - run: scripts/bottle.ts ${{ needs.build.outputs.built }}
         id: bottle-xz
         env:
           COMPRESSION: xz
 
-      - run: pantry/scripts/bottle.ts ${{ needs.build.outputs.built }}
+      - run: scripts/bottle.ts ${{ needs.build.outputs.built }}
         id: bottle-gz
         env:
           COMPRESSION: gz
@@ -201,7 +224,7 @@ jobs:
       - name: upload bottles
         id: upload
         if: ${{ inputs.upload }}
-        run: pantry/scripts/upload.ts
+        run: scripts/upload.ts
           --pkgs ${{ needs.build.outputs.built }} ${{ needs.build.outputs.built }}
           --srcs ${{ needs.build.outputs.srcs }} ${{ needs.build.outputs.srcs }}
           --bottles ${{ steps.bottle-gz.outputs.bottles }} ${{ steps.bottle-xz.outputs.bottles }}
