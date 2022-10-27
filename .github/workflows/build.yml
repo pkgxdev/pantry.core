@@ -106,9 +106,6 @@ jobs:
   test:
     needs: [build]
     runs-on: ${{ matrix.os }}
-    defaults:
-      run:
-        working-directory: tea.xyz/var/pantry
     strategy:
       matrix:
         include:
@@ -147,12 +144,12 @@ jobs:
 
       - name: overlay our pantry
         run: |
-          find $GITHUB_WORKSPACE/pantry \
+          find pantry \
             -not -type l \
             -mindepth 1 \
             -maxdepth 1 \
             -print0 | \
-              xargs -0 -I{} cp -Rv {} .
+              xargs -0 -I{} cp -Rv {} tea.xyz/var/pantry
 
       - uses: actions/download-artifact@v3
         with:
@@ -160,7 +157,8 @@ jobs:
 
       - run: tar xzf artifacts.tgz
 
-      - run: scripts/test.ts ${{ inputs.projects }}
+      # script comes from pantry.core, which _might_not_be_this_pantry_
+      - run: tea.xyz/var/pantry/scripts/test.ts ${{ inputs.projects }}
 
   bottle:
     needs: [test, build]
