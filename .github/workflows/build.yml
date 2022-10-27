@@ -139,7 +139,7 @@ jobs:
       - uses: teaxyz/setup@v0
         id: tea
         with:
-          srcroot: ${{ github.workspace }}/tea.xyz/var/pantry
+          srcroot: pantry
           prefix: ${{ github.workspace }}
 
       - uses: actions/download-artifact@v3
@@ -148,7 +148,7 @@ jobs:
 
       - run: tar xzf artifacts.tgz
 
-      - run: tea.xyz/var/pantry/scripts/test.ts ${{ inputs.projects }}
+      - run: pantry/scripts/test.ts ${{ inputs.projects }}
 
   bottle:
     needs: [test, build]

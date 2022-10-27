@@ -72,7 +72,9 @@ async function test(self: Installation) {
     text += "\n"
 
     for await (const [path, {name, isFile}] of pantry.getYAML(self.pkg).path.parent().ls()) {
-      if (isFile && name != 'package.yml') path.cp({ into: cwd })
+      if (isFile && name != 'package.yml') {
+        path.cp({ into: cwd })
+      }
     }
 
     const cmd = tmp
