@@ -73,7 +73,7 @@ jobs:
               xargs -0 -I{} cp -Rv {} /opt/tea.xyz/var/pantry
           cp -a cli /opt/tea.xyz/var/
 
-      - run: find /opt/tea.xyz/var/pantry
+      - run: find /opt/tea.xyz/var
 
       - run: /opt/tea.xyz/var/pantry/scripts/sort.ts ${{ inputs.projects }}
         id: sorted
