@@ -71,7 +71,7 @@ jobs:
             /opt/tea.xyz/var/pantry/scripts \
             /opt/tea.xyz/var/pantry/import-map.json \
             pantry
-          ln -sf cli/src pantry/src
+          cd pantry && ln -sf ../cli/src
 
       - run: pantry/scripts/sort.ts ${{ inputs.projects }}
         id: sorted
