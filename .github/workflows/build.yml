@@ -70,8 +70,8 @@ jobs:
           cp -nR \
             /opt/tea.xyz/var/pantry/scripts \
             /opt/tea.xyz/var/pantry/import-map.json \
-            cli/src \
             pantry
+          ln -sf cli/src pantry/src
 
       - run: pantry/scripts/sort.ts ${{ inputs.projects }}
         id: sorted
