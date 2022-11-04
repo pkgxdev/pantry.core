@@ -66,6 +66,8 @@ jobs:
             ;;
           esac
 
+          ln -s $GITHUB_WORKSPACE/cli /opt/tea.xyz/var/cli
+
       - run: /opt/tea.xyz/var/pantry/scripts/sort.ts ${{ inputs.projects }}
         id: sorted
 
