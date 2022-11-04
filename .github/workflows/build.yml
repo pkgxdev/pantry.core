@@ -66,7 +66,7 @@ jobs:
             ;;
           esac
 
-        - run: # noop for pantry.core but needed for pantry.extra etc.
+        - run: | # noop for pantry.core but needed for pantry.extra etc.
           cp -nR \
             /opt/tea.xyz/var/pantry/scripts \
             /opt/tea.xyz/var/pantry/import-map.json \
