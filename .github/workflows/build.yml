@@ -31,7 +31,7 @@ jobs:
       srcs: ${{ steps.build.outputs.srcs }}
       pkgs: ${{ steps.sorted.outputs.pkgs }} ${{ steps.sorted.outputs.pre-install }}
     env:
-      TEA_DIR: ${{ github.workspace }}/pantry
+      TEA_PANTRY_PATH: ${{ github.workspace }}/pantry
     steps:
       - name: co pantry
         uses: actions/checkout@v3
@@ -43,11 +43,11 @@ jobs:
         with:
           path: cli
           repository: teaxyz/cli
-          token: ${{ secrets.TEMP_JACOBS_GITHUB_PAT }}
 
       - uses: teaxyz/setup@v0
         id: tea
         with:
+          # necessary because we currently require a `.git` directory
           srcroot: /opt/tea.xyz/var/pantry
           prefix: /opt
 
@@ -66,20 +66,13 @@ jobs:
             ;;
           esac
 
-        - run: | # noop for pantry.core but needed for pantry.extra etc.
-            cp -nR \
-              /opt/tea.xyz/var/pantry/scripts \
-              /opt/tea.xyz/var/pantry/import-map.json \
-              pantry
-        - run: cd pantry && ln -sf ../cli/src
-
-      - run: pantry/scripts/sort.ts ${{ inputs.projects }}
+      - run: /opt/tea.xyz/var/pantry/scripts/sort.ts ${{ inputs.projects }}
         id: sorted
 
       - run: cli/scripts/install.ts ${{ steps.sorted.outputs.pre-install }}
 
       # running out of /opt because only pantry.core has these scripts
-      - run: pantry/scripts/build.ts ${{ steps.sorted.outputs.pkgs }}
+      - run: /opt/tea.xyz/var/scripts/build.ts ${{ steps.sorted.outputs.pkgs }}
         id: build
         env:
           # GITHUB_TOKEN doesn't have private access to teaxyz/cli.
