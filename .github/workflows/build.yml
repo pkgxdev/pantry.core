@@ -30,6 +30,8 @@ jobs:
       built: ${{ steps.build.outputs.pkgs }}
       srcs: ${{ steps.build.outputs.srcs }}
       pkgs: ${{ steps.sorted.outputs.pkgs }} ${{ steps.sorted.outputs.pre-install }}
+    env:
+      TEA_DIR: ${{ github.workspace }}/pantry
     steps:
       - name: co pantry
         uses: actions/checkout@v3
@@ -64,14 +66,20 @@ jobs:
             ;;
           esac
 
-      - run: /opt/tea.xyz/var/pantry/scripts/sort.ts ${{ inputs.projects }}
+          # noop for pantry.core but needed for pantry.extra etc.
+          cp -R \
+            /opt/tea.xyz/var/pantry/scripts \
+            /opt/tea.xyz/var/pantry/import-map.json \
+            cli/src \
+            pantry
+
+      - run: pantry/scripts/sort.ts ${{ inputs.projects }}
         id: sorted
 
       - run: cli/scripts/install.ts ${{ steps.sorted.outputs.pre-install }}
 
-      - run: cat /opt/tea.xyz/var/pantry/projects/zlib.net/package.yml
-
-      - run: /opt/tea.xyz/var/pantry/scripts/build.ts ${{ steps.sorted.outputs.pkgs }}
+      # running out of /opt because only pantry.core has these scripts
+      - run: pantry/scripts/build.ts ${{ steps.sorted.outputs.pkgs }}
         id: build
         env:
           # GITHUB_TOKEN doesn't have private access to teaxyz/cli.
@@ -114,18 +122,8 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          path: pantry
-
-      - uses: actions/checkout@v3
-        with:
-          path: tea.xyz/var/cli
+          path: cli
           repository: teaxyz/cli
-          token: ${{ secrets.TEMP_JACOBS_GITHUB_PAT }}
-
-      - run: |
-          apt-get update
-          apt-get --yes install libc-dev libstdc++-8-dev libgcc-8-dev
-        if: ${{ matrix.container != '' }}
 
       - uses: teaxyz/setup@v0
         id: tea
@@ -133,13 +131,21 @@ jobs:
           srcroot: tea.xyz/var/pantry
           prefix: ${{ github.workspace }}
 
+      - uses: actions/checkout@v3
+        with:
+          path: tea.xyz/var/pantry
+
+      - run: |
+          apt-get update
+          apt-get --yes install libc-dev libstdc++-8-dev libgcc-8-dev
+        if: ${{ matrix.container != '' }}
+
       - uses: actions/download-artifact@v3
         with:
           name: ${{ matrix.tag || matrix.os }}
 
       - run: tar xzf artifacts.tgz
 
-      # script comes from pantry.core, which _might_not_be_this_pantry_
       - run: tea.xyz/var/pantry/scripts/test.ts ${{ inputs.projects }}
 
   bottle:
@@ -160,19 +166,18 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          path: pantry
-
-      - uses: actions/checkout@v3
-        with:
-          path: tea.xyz/var/cli
+          path: cli
           repository: teaxyz/cli
-          token: ${{ secrets.TEMP_JACOBS_GITHUB_PAT }}
 
       - uses: teaxyz/setup@v0
         id: tea
         with:
           srcroot: tea.xyz/var/pantry
           prefix: ${{ github.workspace }}
+
+      - uses: actions/checkout@v3
+        with:
+          path: tea.xyz/var/pantry
 
       - uses: actions/download-artifact@v3
         with:
