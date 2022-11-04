@@ -1,4 +1,5 @@
 name: build
+
 on:
   workflow_call:
     inputs:
@@ -9,6 +10,9 @@ on:
         required: false
         type: boolean
         default: false
+
+env:
+  TEA_PANTRY_PATH: ${{ github.workspace }}/pantry
 
 jobs:
   build:
@@ -30,8 +34,6 @@ jobs:
       built: ${{ steps.build.outputs.pkgs }}
       srcs: ${{ steps.build.outputs.srcs }}
       pkgs: ${{ steps.sorted.outputs.pkgs }} ${{ steps.sorted.outputs.pre-install }}
-    env:
-      TEA_PANTRY_PATH: ${{ github.workspace }}/pantry
     steps:
       - name: co pantry
         uses: actions/checkout@v3
@@ -117,18 +119,18 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          path: cli
+          path: tea.xyz/var/cli
           repository: teaxyz/cli
+
+      - uses: actions/checkout@v3
+        with:
+          path: pantry
 
       - uses: teaxyz/setup@v0
         id: tea
         with:
           srcroot: tea.xyz/var/pantry
           prefix: ${{ github.workspace }}
-
-      - uses: actions/checkout@v3
-        with:
-          path: tea.xyz/var/pantry
 
       - run: |
           apt-get update
@@ -161,18 +163,18 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          path: cli
+          path: tea.xyz/var/cli
           repository: teaxyz/cli
+
+      - uses: actions/checkout@v3
+        with:
+          path: pantry
 
       - uses: teaxyz/setup@v0
         id: tea
         with:
           srcroot: tea.xyz/var/pantry
           prefix: ${{ github.workspace }}
-
-      - uses: actions/checkout@v3
-        with:
-          path: tea.xyz/var/pantry
 
       - uses: actions/download-artifact@v3
         with:
