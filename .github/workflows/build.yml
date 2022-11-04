@@ -67,10 +67,10 @@ jobs:
           esac
 
         - run: | # noop for pantry.core but needed for pantry.extra etc.
-          cp -nR \
-            /opt/tea.xyz/var/pantry/scripts \
-            /opt/tea.xyz/var/pantry/import-map.json \
-            pantry
+            cp -nR \
+              /opt/tea.xyz/var/pantry/scripts \
+              /opt/tea.xyz/var/pantry/import-map.json \
+              pantry
         - run: cd pantry && ln -sf ../cli/src
 
       - run: pantry/scripts/sort.ts ${{ inputs.projects }}
