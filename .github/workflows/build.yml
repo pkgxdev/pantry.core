@@ -64,15 +64,6 @@ jobs:
             ;;
           esac
 
-      - run: |
-          find $GITHUB_WORKSPACE/pantry \
-            -not -type l \
-            -mindepth 1 \
-            -maxdepth 1 \
-            -print0 | \
-              xargs -0 -I{} cp -Rv {} /opt/tea.xyz/var/pantry
-          cp -a cli /opt/tea.xyz/var/
-
       - run: /opt/tea.xyz/var/pantry/scripts/sort.ts ${{ inputs.projects }}
         id: sorted
 
@@ -142,15 +133,6 @@ jobs:
           srcroot: tea.xyz/var/pantry
           prefix: ${{ github.workspace }}
 
-      - name: overlay our pantry
-        run: |
-          find pantry \
-            -not -type l \
-            -mindepth 1 \
-            -maxdepth 1 \
-            -print0 | \
-              xargs -0 -I{} cp -Rv {} tea.xyz/var/pantry
-
       - uses: actions/download-artifact@v3
         with:
           name: ${{ matrix.tag || matrix.os }}
@@ -191,15 +173,6 @@ jobs:
         with:
           srcroot: tea.xyz/var/pantry
           prefix: ${{ github.workspace }}
-
-      - name: overlay our pantry
-        run: |
-          find $GITHUB_WORKSPACE/pantry \
-            -not -type l \
-            -mindepth 1 \
-            -maxdepth 1 \
-            -print0 | \
-              xargs -0 -I{} cp -Rv {} .
 
       - uses: actions/download-artifact@v3
         with:
