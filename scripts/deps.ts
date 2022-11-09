@@ -9,9 +9,11 @@ args:
   - --import-map={{ srcroot }}/import-map.json
 ---*/
 
-import { PackageRequirement } from "types"
+import { Package, PackageRequirement } from "types"
 import { usePantry, useFlags } from "hooks"
 import { hydrate } from "prefab"
+import * as ARGV from "./utils/args.ts"
+import { set_output } from "./utils/gha.ts"
 import { pkg } from "utils"
 
 const pantry = usePantry()
@@ -19,7 +21,8 @@ const pantry = usePantry()
 useFlags()
 
 const mode: 'build' | 'install' = Deno.args.includes("-b") ? 'build' : 'install'
-const get_deps = async (pkg: PackageRequirement) => {
+
+const get_deps = async (pkg: Package | PackageRequirement) => {
   const deps = await pantry.getDeps(pkg)
   switch (mode) {
   case 'build':
@@ -29,19 +32,17 @@ const get_deps = async (pkg: PackageRequirement) => {
   }
 }
 
-const dry = Deno.args.compact(arg => !arg.startsWith('-') && pkg.parse(arg))
-const explicit = new Set(dry.map(x=>x.project))
-const wet = await hydrate(dry, get_deps)
-const gas = wet.pkgs.compact(({project}) => {
-  if (Deno.args.includes('-i')) {
-    return project
-  } else if (!explicit.has(project)){
-    return project
-  }
-})
+const rv: PackageRequirement[] = []
+for await (const pkg of ARGV.pkgs()) {
+  const deps = await get_deps(pkg)
+  const wet = await hydrate(deps)
+  rv.push(...wet.pkgs)
+}
+
+const gas = rv.map(pkg.str)
 
 if (Deno.env.get("GITHUB_ACTIONS")) {
-  console.log(`::set-output name=pkgs::${gas.join(" ")}\n`)
+  set_output("deps", gas)
 } else {
   console.log(gas.join("\n"))
 }
