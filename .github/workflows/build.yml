@@ -76,6 +76,8 @@ jobs:
             cp -r pantry/scripts/* /opt/tea.xyz/var/pantry/scripts
           fi
 
+          echo x$GITHUB_REPOSITORY x
+
       - run: /opt/tea.xyz/var/pantry/scripts/sort.ts ${{ inputs.projects }}
         id: sorted
 
