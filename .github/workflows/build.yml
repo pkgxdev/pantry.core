@@ -79,7 +79,7 @@ jobs:
       - run: /opt/tea.xyz/var/pantry/scripts/sort.ts ${{ inputs.projects }}
         id: sorted
 
-      - run: /opt/tea.xyz/var/pantry/scripts/deps.ts -b ${{ steps.sorted.outputs.pkgs }}
+      - run: /opt/tea.xyz/var/pantry/scripts/build-deps.ts ${{ steps.sorted.outputs.pkgs }}
         id: deps
 
       - run: cli/scripts/install.ts ${{ steps.deps.outputs.pkgs }}

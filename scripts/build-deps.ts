@@ -20,15 +20,15 @@ const pantry = usePantry()
 
 useFlags()
 
-const mode: 'build' | 'install' = Deno.args.includes("-b") ? 'build' : 'install'
+const mode: 'build' | 'install' = 'build' //Deno.args.includes("-b") ? 'build' : 'install'
 
 const get_deps = async (pkg: Package | PackageRequirement) => {
   const deps = await pantry.getDeps(pkg)
   switch (mode) {
   case 'build':
     return [...deps.build, ...deps.runtime]
-  case 'install':
-    return deps.runtime
+  // case 'install':
+  //   return deps.runtime
   }
 }
 
