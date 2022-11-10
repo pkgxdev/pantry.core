@@ -42,7 +42,7 @@ for await (const pkg of ARGV.pkgs()) {
 const gas = rv.map(pkg.str)
 
 if (Deno.env.get("GITHUB_ACTIONS")) {
-  set_output("deps", gas)
+  set_output("pkgs", gas)
 } else {
   console.log(gas.join("\n"))
 }
