@@ -9,8 +9,10 @@ provides:
   - bin/deno
 
 interprets:
-  - .ts
-  - .js
+  ts:
+    - deno
+    - run
+  # js: deno # nodejs.org for now
 
 build:
   script: |

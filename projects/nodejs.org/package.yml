@@ -16,6 +16,9 @@ dependencies:
 provides:
   - bin/node
 
+interprets:
+  js: node
+
 build:
   dependencies:
     tea.xyz/gx/cc: c99

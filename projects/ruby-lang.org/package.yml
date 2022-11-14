@@ -52,5 +52,8 @@ provides:
   - bin/ri
   - bin/ruby
 
+interprets:
+  rb: ruby-lang.org
+
 companions:
   rubygems.org: '*'

@@ -79,3 +79,6 @@ provides:
   - bin/streamzip
   - bin/xsubpp
   - bin/zipdetails
+
+interprets:
+  pl: perl
