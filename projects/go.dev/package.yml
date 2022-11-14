@@ -27,6 +27,9 @@ build:
     go.dev: '*'
   working-directory: src
   script: |-
+    # `make.bash` complains about unset GOCACHE and HOME otherwise
+    export GOCACHE="$(pwd)/.gocache"
+
     ./make.bash
 
     # cleanup
