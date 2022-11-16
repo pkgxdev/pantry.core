@@ -13,14 +13,10 @@ dependencies:
   nodejs.org: '>=14'
 
 build:
-  dependencies:
-    curl.se: '*'
-  script: |
-    ./scripts/install.sh
-  env:
-    npm_config_prefix: ${{prefix}}
+  script:
+    node . install --global --prefix={{prefix}}
 
 test:
   script: |
-    npm -g bin
+    npm -g doctor
     npx -q tldr ls
