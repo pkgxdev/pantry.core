@@ -17,6 +17,8 @@ build:
     node . install --global --prefix={{prefix}}
 
 test:
+  dependencies:
+    git-scm.org: '*' # `npm doctor` checks for, but doesn't use, `git`
   script: |
-    npm -g doctor
+    npm doctor
     npx -q tldr ls
