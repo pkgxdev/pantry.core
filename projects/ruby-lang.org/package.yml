@@ -53,7 +53,7 @@ provides:
   - bin/ruby
 
 interprets:
-  rb: ruby
+  rb: [ruby]
 
 companions:
   rubygems.org: '*'

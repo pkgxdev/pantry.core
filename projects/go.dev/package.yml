@@ -10,9 +10,7 @@ provides:
   - bin/go
 
 interprets:
-  go:
-    - go
-    - run
+  go: [go, run]
 
 dependencies:
   # `cgo` requires a C compiler
