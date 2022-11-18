@@ -14,10 +14,13 @@ dependencies:
 build:
   dependencies:
     gnu.org/libtool: 2
+    gnu.org/automake: 1
+    gnu.org/autoconf: 2
     tea.xyz/gx/cc: c99
     tea.xyz/gx/make: '*'
     freedesktop.org/pkg-config: ^0.29
   script: |
+    ./autogen.sh
     ./configure $ARGS
     make V=1 --jobs {{ hw.concurrency }}
     make install
