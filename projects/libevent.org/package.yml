@@ -33,7 +33,8 @@ test:
   dependencies:
     tea.xyz/gx/cc: c99
   script: |
-    cc $FIXTURE "-levent"
+    mv $FIXTURE $FIXTURE.c
+    cc $FIXTURE.c "-levent"
     ./a.out
   fixture: |
     #include <event2/event.h>
