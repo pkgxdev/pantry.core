@@ -10,7 +10,7 @@ args:
   - --import-map={{ srcroot }}/import-map.json
 ---*/
 
-import { S3 } from "s3";
+import { S3, S3Bucket } from "s3";
 import { pkg as pkgutils } from "utils";
 import { useCache, useFlags, useOffLicense, usePrefix } from "hooks";
 import { Package, PackageRequirement } from "types";
@@ -48,7 +48,7 @@ function assert_pkg(pkg: Package | PackageRequirement) {
   }
 }
 
-async function get_versions(key: string, pkg: Package): Promise<SemVer[]> {
+async function get_versions(key: string, pkg: Package, bucket: S3Bucket): Promise<SemVer[]> {
   const prefix = dirname(key);
   const rsp = await bucket.listObjects({ prefix });
 
@@ -68,7 +68,7 @@ async function get_versions(key: string, pkg: Package): Promise<SemVer[]> {
     .sort(semver.compare);
 }
 
-async function put(key: string, body: string | Path | Uint8Array) {
+async function put(key: string, body: string | Path | Uint8Array, bucket: S3Bucket) {
   console.log({ uploading: body, to: key });
   rv.push(`/${key}`);
   if (body instanceof Path) {
@@ -109,12 +109,12 @@ for (const [index, pkg] of pkgs.entries()) {
   const checksum = checksums[index];
   const stowed = cache.decode(bottle)!;
   const key = useOffLicense("s3").key(stowed);
-  const versions = await get_versions(key, pkg);
+  const versions = await get_versions(key, pkg, bucket);
 
   //FIXME stream the bottle (at least) to S3
-  await put(key, bottle);
-  await put(`${key}.sha256sum`, `${checksum}  ${basename(key)}`);
-  await put(`${dirname(key)}/versions.txt`, versions.join("\n"));
+  await put(key, bottle, bucket);
+  await put(`${key}.sha256sum`, `${checksum}  ${basename(key)}`, bucket);
+  await put(`${dirname(key)}/versions.txt`, versions.join("\n"), bucket);
 
   // mirror the sources
   if (srcs[index] != "~") {
@@ -125,10 +125,10 @@ for (const [index, pkg] of pkgs.entries()) {
       extname: src.extname(),
     });
     const srcChecksum = await sha256(src);
-    const srcVersions = await get_versions(srcKey, pkg);
-    await put(srcKey, src);
-    await put(`${srcKey}.sha256sum`, `${srcChecksum}  ${basename(srcKey)}`);
-    await put(`${dirname(srcKey)}/versions.txt`, srcVersions.join("\n"));
+    const srcVersions = await get_versions(srcKey, pkg, bucket);
+    await put(srcKey, src, bucket);
+    await put(`${srcKey}.sha256sum`, `${srcChecksum}  ${basename(srcKey)}`, bucket);
+    await put(`${dirname(srcKey)}/versions.txt`, srcVersions.join("\n"), bucket);
   }
 }
 
