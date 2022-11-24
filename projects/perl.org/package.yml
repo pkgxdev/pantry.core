@@ -81,4 +81,5 @@ provides:
   - bin/zipdetails
 
 interprets:
-  pl: [perl]
+  extensions: pl
+  args: perl

@@ -17,7 +17,8 @@ provides:
   - bin/node
 
 interprets:
-  js: [node]
+  extensions: js
+  args: node
 
 build:
   dependencies:
