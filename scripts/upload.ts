@@ -4,14 +4,16 @@
 args:
   - deno
   - run
+  - --allow-run=tar
   - --allow-net
   - --allow-read
   - --allow-env
+  - --unstable
   - --import-map={{ srcroot }}/import-map.json
 ---*/
 
 import { S3 } from "s3"
-import { pkg as pkgutils } from "utils"
+import { pkg as pkgutils, run, TarballUnarchiver } from "utils"
 import { useFlags, useOffLicense, useCache, usePrefix } from "hooks"
 import { Package, PackageRequirement } from "types"
 import SemVer, * as semver from "semver"
@@ -79,6 +81,8 @@ for (const [index, pkg] of pkgs.entries()) {
   await put(key, bottle)
   await put(`${key}.sha256sum`, `${checksum}  ${basename(key)}`)
   await put(`${dirname(key)}/versions.txt`, versions.join("\n"))
+  // We store naked `tea` binaries for direct download as well.
+  if (pkg.project == 'tea.xyz') await putTeaBin(pkg, key, bottle)
 
   // mirror the sources
   if (srcs[index] != "~") {
@@ -129,4 +133,18 @@ function assert_pkg(pkg: Package | PackageRequirement) {
       version: new SemVer(pkg.constraint)
     }
   }
+}
+
+async function putTeaBin(pkg: Package, key: string, bottle: Path) {
+  const { verbosity } = useFlags()
+  const dstdir = usePrefix()
+  const cmd = new TarballUnarchiver({
+    zipfile: bottle, dstdir, verbosity
+  }).args()
+
+  await run({ cmd, clearEnv: true })
+
+  const bin = dstdir.join(`${pkg.project}/v${pkg.version}/bin/tea`)
+  const s3Dest = key.replace(new RegExp(`\/v([0-9\.]+)\.tar\.(g|x)z$`), '/tea_v$1')
+  return await put(s3Dest, bin)
 }
