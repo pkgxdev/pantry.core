@@ -34,7 +34,7 @@ tea +gnu.org/wget wget -qO- tea.xyz/white-paper | tea +charm.sh/glow glow -
 
 # Contributing
 
-See the contributing guide in [pantry.zero].
+See the contributing guide in [pantry.zero][pantry.zero/contributing].
 
 
 &nbsp;
@@ -62,7 +62,8 @@ for x in scripts/*.ts src/app.ts; do
 done
 ```
 
-[pantry.zero]: https://github.com/teaxyz/pantry.zero#contributing
 [pantry.core]: https://github.com/teaxyz/pantry.core
+[pantry.zero]: https://github.com/teaxyz/pantry.zero#what-is-a-pantry
+[pantry.zero/contributing]: https://github.com/teaxyz/pantry.zero#contributing
 [pantry.extra]: https://github.com/teaxyz/pantry.extra
 [tea/cli]: https://github.com/teaxyz/cli
