@@ -22,9 +22,15 @@ request against [pantry.extra] first.
 
 # Use with tea/cli
 
-tea/cli clones/updates this pantry and [pantry.extra] when installed with the
+[tea/cli] clones/updates this pantry and [pantry.extra] when installed with the
 installer or when you run `tea --sync`. At this time pantries are not
 versioned.
+
+## Example
+This example downloads our white paper and renders it with charm’s excellent glow terminal markdown renderer. Both packages `gnu.org/wget` and `charm.sh/glow` are present in [pantry.core] (this repo) and [pantry.extra], respectively. 
+```sh
+tea +gnu.org/wget wget -qO- tea.xyz/white-paper | tea +charm.sh/glow glow -
+```
 
 # Contributing
 
@@ -57,4 +63,6 @@ done
 ```
 
 [pantry.zero]: https://github.com/teaxyz/pantry.zero#contributing
+[pantry.core]: https://github.com/teaxyz/pantry.core
 [pantry.extra]: https://github.com/teaxyz/pantry.extra
+[tea/cli]: https://github.com/teaxyz/cli
