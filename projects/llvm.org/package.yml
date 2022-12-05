@@ -5,7 +5,7 @@ distributable:
 versions:
   github: llvm/llvm-project
   strip: /^LLVM /
-  ignore: 15.y.z
+  ignore: 15.0.0
   # ^^ won’t even build pkg-config lol
   # tested: [15.0.0]
 
