@@ -12,11 +12,14 @@ on:
         default: false
 
 env:
-  TEA_PANTRY_PATH: ${{ github.workspace }}/pantry
+  TEA_PANTRY_PATH: ${{ github.workspace }}
 
 jobs:
   build:
     runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        working-directory: ${{ github.repository == 'teaxyz/pantry.core' && format('{0}/scripts', github.workspace) || '/opt/tea.xyz/var/pantry/scripts' }}
     strategy:
       matrix:
         include:
@@ -35,22 +38,13 @@ jobs:
       srcs: ${{ steps.build.outputs.srcs }}
       pkgs: ${{ steps.sorted.outputs.pkgs }} ${{ steps.sorted.outputs.pre-install }}
     steps:
-      - name: co pantry
-        uses: actions/checkout@v3
-        with:
-          path: pantry
-
-      - name: co cli
-        uses: actions/checkout@v3
-        with:
-          path: cli
-          repository: teaxyz/cli
+      - uses: actions/checkout@v3
 
       - uses: teaxyz/setup@v0
         id: tea
         with:
-          # necessary because we currently require a `.git` directory
-          srcroot: /opt/tea.xyz/var/pantry
+          srcroot: ${{ env.TEA_PANTRY_PATH }}
+          # ^^ necessary because we currently require a `.git` directory
           prefix: /opt
 
       - name: HACKS
@@ -68,34 +62,24 @@ jobs:
             ;;
           esac
 
-          ln -s $GITHUB_WORKSPACE/cli /opt/tea.xyz/var/cli
-
-          # in case this PR contains updates to the scripts
-          #TODO only do for PRs
-          if test "$GITHUB_REPOSITORY" = "teaxyz/pantry.core"; then
-            cp -rv pantry/scripts/* /opt/tea.xyz/var/pantry/scripts
-          fi
-
-      - run: /opt/tea.xyz/var/pantry/scripts/sort.ts ${{ inputs.projects }}
+      - run: ./sort.ts ${{ inputs.projects }}
         id: sorted
 
-      - run: /opt/tea.xyz/var/pantry/scripts/build-deps.ts ${{ steps.sorted.outputs.pkgs }}
+      - run: ./build-deps.ts ${{ steps.sorted.outputs.pkgs }}
         id: deps
 
-      - run: cli/scripts/install.ts ${{ steps.deps.outputs.pkgs }}
+      - run: ./install.ts ${{ steps.deps.outputs.pkgs }}
 
-      # running out of /opt because only pantry.core has these scripts
-      - run: /opt/tea.xyz/var/pantry/scripts/build.plumbing.ts ${{ steps.sorted.outputs.pkgs }}
+      - run: ./build.plumbing.ts ${{ steps.sorted.outputs.pkgs }}
         id: build
         env:
           GITHUB_TOKEN: ${{ github.token }}
           FORCE_UNSAFE_CONFIGURE: 1  # some configure scripts refuse to run as root
 
-      # the next three steps bless our code for Apple. It might be the case they should be
-      # encapulated separately.
-      # FIXME: using an explicit commit in a PR isn't great, but the last release was almost 3 years
-      # ago, and we need bugfixes.
-      # FIXME: replace this with a tea script based on https://localazy.com/blog/how-to-automatically-sign-macos-apps-using-github-actions
+      # the next three steps bless our code for Apple. It might be the case
+      # they should be encapulated separately.
+      # FIXME: using an explicit commit in a PR isn't great, but the last
+      # release was almost 3 years ago, and we need bugfixes.
       # github has a doc with similar content, but it's not returning to me atm.
       - uses: apple-actions/import-codesign-certs@d54750db52a4d3eaed0fc107a8bab3958f3f7494
         if: matrix.tag == 'darwin-aarch64' || matrix.os == 'macos-11'
@@ -104,7 +88,7 @@ jobs:
           p12-password: ${{ secrets.APPLE_CERTIFICATE_P12_PASSWORD }}
 
       # Codesign libs and bins
-      - name: Codesign package
+      - name: codesign
         if: matrix.tag == 'darwin-aarch64' || matrix.os == 'macos-11'
         run: |
           for PKG in ${{ steps.build.outputs.relative-paths }}; do
@@ -114,7 +98,7 @@ jobs:
           done
 
       # This isn't very informative, but even a no-op is safer than none
-      - name: Check codesigning
+      - name: verify codesigning
         if: matrix.tag == 'darwin-aarch64' || matrix.os == 'macos-11'
         run: |
           for PKG in ${{ steps.build.outputs.relative-paths }}; do
@@ -124,7 +108,7 @@ jobs:
           done
 
       # Needed for self-hosted runner, since it doesn't destroy itself automatically.
-      - name: Delete keychain
+      - name: delete keychain
         if: always() && matrix.tag == 'darwin-aarch64'
         run: security delete-keychain signing_temp.keychain
 
@@ -160,15 +144,11 @@ jobs:
         - os: [self-hosted, linux, ARM64]
           tag: linux-aarch64
     container: ${{ matrix.container }}
+    defaults:
+      run:
+        working-directory: ${{ github.repository == 'teaxyz/pantry.core' && format('{0}/scripts', github.workspace) || format('{0}/tea.xyz/var/pantry/scripts', github.workspace) }}
     steps:
       - uses: actions/checkout@v3
-        with:
-          path: tea.xyz/var/cli
-          repository: teaxyz/cli
-
-      - uses: actions/checkout@v3
-        with:
-          path: pantry
 
       - uses: teaxyz/setup@v0
         id: tea
@@ -196,7 +176,7 @@ jobs:
     runs-on: ${{ matrix.platform.os }}
     defaults:
       run:
-        working-directory: tea.xyz/var/pantry
+        working-directory: ${{ github.repository == 'teaxyz/pantry.core' && format('{0}/scripts', github.workspace) || format('{0}/tea.xyz/var/pantry/scripts', github.workspace) }}
     strategy:
       matrix:
         platform:
@@ -212,18 +192,11 @@ jobs:
             name: linux+aarch64
     steps:
       - uses: actions/checkout@v3
-        with:
-          path: tea.xyz/var/cli
-          repository: teaxyz/cli
-
-      - uses: actions/checkout@v3
-        with:
-          path: pantry
 
       - uses: teaxyz/setup@v0
         id: tea
         with:
-          srcroot: tea.xyz/var/pantry
+          srcroot: ${{ env.TEA_PANTRY_PATH }}
           prefix: ${{ github.workspace }}
 
       - uses: actions/download-artifact@v3
@@ -279,17 +252,18 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
-  notify:
-    if: always()
-    needs: [test, build, bottle]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: martialonline/workflow-status@v3
-        id: status
-      - uses: rtCamp/action-slack-notify@v2
-        if: ${{ env.SLACK_WEBHOOK != '' }}
-        env:
-          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
-          SLACK_CHANNEL: ${{ secrets.SLACK_CHANNEL }}
-          SLACK_MESSAGE: build job for ${{ inputs.projects }} ${{ steps.status.outputs.status }}
-          SLACK_COLOR: ${{ steps.status.outputs.status }}
+  # this is just noise
+  # notify:
+  #   if: always()
+  #   needs: [test, build, bottle]
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: martialonline/workflow-status@v3
+  #       id: status
+  #     - uses: rtCamp/action-slack-notify@v2
+  #       if: ${{ env.SLACK_WEBHOOK != '' }}
+  #       env:
+  #         SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+  #         SLACK_CHANNEL: ${{ secrets.SLACK_CHANNEL }}
+  #         SLACK_MESSAGE: build job for ${{ inputs.projects }} ${{ steps.status.outputs.status }}
+  #         SLACK_COLOR: ${{ steps.status.outputs.status }}
