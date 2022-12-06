@@ -118,7 +118,7 @@ jobs:
         if: matrix.tag == 'darwin-aarch64' || matrix.os == 'macos-11'
         run: |
           for PKG in ${{ steps.build.outputs.relative-paths }}; do
-            for SIG in `find /opt/$PKG -name '*.so' -or -name '*.dylib'` `find /opt/$PKG/bin`; do
+            for SIG in `find /opt/$PKG -name '*.so' -or -name '*.dylib'` `find /opt/$PKG/bin -type f`; do
               codesign -vvv --deep --strict "$SIG"
             done
           done
