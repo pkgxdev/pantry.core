@@ -14,7 +14,9 @@ dependencies:
 
 build:
   script: |
-    sed -i.bak "s/^const version = .*$/const version = \"{{ version }}\"/" src/app.ts
+    ls
+    ls src
+    sed -i.bak -e "s/^const version = .*$/const version = \"{{ version }}\"/" src/app.ts
     rm src/app.ts.bak
 
     mkdir -p {{ prefix }}/bin
