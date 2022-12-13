@@ -1,0 +1,12 @@
+distributable: ~
+
+commands:
+  deps: deps.ts
+
+build: |
+  cp *.ts {{prefix}}
+
+test: |
+  out=$(tea +tea.xyz/plumbing +sqlite.org deps)
+  test out = "zlib.net^1\ngnu.org/readline^8"
+# ^^ order is topological and should be stable
