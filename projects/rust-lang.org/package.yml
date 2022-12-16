@@ -31,6 +31,8 @@ options:
 dependencies:
   tea.xyz/gx/cc: c99
   #FIXME ^^ strictly rustc only needs a linker
+  linux:
+    llvm.org: '>=12<15' # doesn't seem to play nicely with llvm15 yet.
   zlib.net: 1
 
 build:
