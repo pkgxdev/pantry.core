@@ -1,0 +1,18 @@
+name: cleanup
+on:
+  pull_request:
+    types: [closed]
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          REPO=$(echo ${{github.repository}} | sed -e 's_teaxyz/__')
+          PR=$(echo ${{github.ref}} | sed -e 's_refs/pull/\(.*\)/merge_\1_')
+          aws s3 rm --recursive s3://artifacts.tea.xyz/pull-request/$REPO/$PR
+        if: startsWith(github.ref, 'refs/pull/') && startsWith(github.repository, 'teaxyz/pantry.')
+        env:
+          AWS_S3_BUCKET: ${{ secrets.AWS_S3_CACHE }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
