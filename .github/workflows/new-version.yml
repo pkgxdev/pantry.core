@@ -15,3 +15,5 @@ jobs:
       projects: ${{ inputs.projects }}
       upload: true
     secrets: inherit
+  bottle:
+    uses: ./.github/workflows/bottle.yml

@@ -25,11 +25,10 @@ jobs:
         id: diff
         with:
           PATTERNS: projects/**/package.yml
-  build:
+  bottle:
     needs: [get-diff]
-    uses: ./.github/workflows/build.yml
-    with:
-      projects: ${{ needs.get-diff.outputs.diff }}
-      upload: true
-    secrets: inherit
     if: ${{ needs.get-diff.outputs.diff != '' }}
+    uses: ./.github/workflows/bottle.yml
+    with:
+      merged: true
+    secrets: inherit
