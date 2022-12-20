@@ -55,7 +55,7 @@ jobs:
         if: startsWith(github.ref, 'refs/pull/')
         env:
           GITHUB_TOKEN: ${{github.token}}
-          AWS_S3_BUCKET: ${{ secrets.AWS_S3_CACHE }}
+          AWS_S3_CACHE: ${{ secrets.AWS_S3_CACHE }}
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
@@ -238,6 +238,6 @@ jobs:
           REPO=$(echo ${{github.repository}} | sed -e 's_teaxyz/__')
           PR=$(echo ${{github.ref}} | sed -e 's_refs/pull/\(.*\)/merge_\1_')
 
-          aws s3 rm --recursive s3://$AWS_S3_BUCKET/pull-request/$REPO/$PR
+          aws s3 rm --recursive s3://$AWS_S3_CACHE/pull-request/$REPO/$PR
         env:
-          AWS_S3_BUCKET: ${{ secrets.AWS_S3_CACHE }}
+          AWS_S3_CACHE: ${{ secrets.AWS_S3_CACHE }}
