@@ -241,18 +241,3 @@ jobs:
           aws s3 rm --recursive s3://$AWS_S3_BUCKET/pull-request/$REPO/$PR
         env:
           AWS_S3_BUCKET: ${{ secrets.AWS_S3_CACHE }}
-
-  notify:
-    if: always()
-    needs: [bottle, upload, cleanup]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: martialonline/workflow-status@v3
-        id: status
-      - uses: rtCamp/action-slack-notify@v2
-        if: ${{ env.SLACK_WEBHOOK != '' }}
-        env:
-          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
-          SLACK_CHANNEL: ${{ secrets.SLACK_CHANNEL }}
-          SLACK_MESSAGE: bottle job for ${{ needs.bottle.outputs.built }} ${{ steps.status.outputs.status }}
-          SLACK_COLOR: ${{ steps.status.outputs.status }}

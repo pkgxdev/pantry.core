@@ -18,18 +18,3 @@ jobs:
     with:
       projects: ${{ needs.get-diff.outputs.diff || 'zlib.net' }}
     secrets: inherit
-
-  notify:
-    if: always()
-    needs: [build]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: martialonline/workflow-status@v3
-        id: status
-      - uses: rtCamp/action-slack-notify@v2
-        if: ${{ env.SLACK_WEBHOOK != '' }}
-        env:
-          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
-          SLACK_CHANNEL: ${{ secrets.SLACK_CHANNEL }}
-          SLACK_MESSAGE: build job for ${{ needs.get-diff.outputs.diff || 'zlib.net' }} ${{ steps.status.outputs.status }}
-          SLACK_COLOR: ${{ steps.status.outputs.status }}
