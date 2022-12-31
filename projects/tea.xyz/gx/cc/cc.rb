@@ -12,7 +12,7 @@ exe = File.basename($0)
 
 # remove duplicates since this in fact embeds the rpath multiple times
 args = ARGV.map do |arg|
-  arg unless arg == "-Wl,-rpath,#$tea_prefix"
+  arg unless arg == "-Wl,-rpath,#$tea_prefix" or arg == "-nodefaultrpaths"
 end.compact
 
 # find next example of ourselves
