@@ -41,12 +41,7 @@ end
 
 class Fixer
   def initialize(file)
-    begin
-      @file = MachO::MachOFile.new(file)
-    rescue MachO::MachOError
-      # Fall back attempt, as some files are fat binaries
-      @file = MachO::FatFile.new(file)
-    end
+    @file = MachO.open(file)
     @changed = false
   end
 
