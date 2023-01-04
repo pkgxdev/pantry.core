@@ -21,10 +21,12 @@ build:
     ./configure --prefix="{{prefix}}" --enable-load-relative --disable-rubygems
     make --jobs {{hw.concurrency}} install
 
-    cd "{{prefix}}"/bin
+    cd "{{prefix}}"
 
     # use the GEM_PATH we want
     git apply "$SRCROOT"/props/defaults.rb.patch
+
+    cd bin
 
     # we provide these as `rubygems.org`
     rm bundle bundler gem rake rbs rdbg typeprof
