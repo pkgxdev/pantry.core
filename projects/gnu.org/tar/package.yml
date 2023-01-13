@@ -3,7 +3,7 @@ distributable:
   strip-components: 1
 
 versions:
-  - 1.34
+  - v1.34
   #TODO scrape https://ftp.gnu.org/gnu/tar/
 
 provides:

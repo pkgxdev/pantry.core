@@ -9,7 +9,7 @@ distributable:
 # despite PCRE being unmaintained, most stuff still uses it, lol
 
 versions:
-  - 8.45
+  - v8.45
 
 dependencies:
   sourceware.org/bzip2: 1

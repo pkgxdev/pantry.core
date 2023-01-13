@@ -4,7 +4,7 @@ distributable:
 
 versions:
   #TODO brew has a couple patches we should apply
-  - 8.1
+  - v8.1
 
 dependencies:
   invisible-island.net/ncurses: 6
