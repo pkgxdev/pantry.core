@@ -32,11 +32,6 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          path: tea.xyz/var/cli
-          repository: teaxyz/cli
-
-      - uses: actions/checkout@v3
-        with:
           path: pantry
 
       - uses: teaxyz/setup@v0
@@ -175,11 +170,6 @@ jobs:
           - os: [self-hosted, linux, ARM64]
             name: linux+aarch64
     steps:
-      - uses: actions/checkout@v3
-        with:
-          path: tea.xyz/var/cli
-          repository: teaxyz/cli
-
       - uses: actions/checkout@v3
         with:
           path: pantry

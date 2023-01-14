@@ -47,6 +47,16 @@ build:
       export ARGS="$ARGS --enable-optimize"
     fi
 
+    # This seems to be needed due to a mismatch between the LLVM linker
+    # Rust bootstraps with and the one we use to build Rust. After
+    # extensive research, this appears to fix the issue (which only)
+    # occurs on linux/aarch64.
+    # https://github.com/rust-lang/rust/issues/93166
+
+    if test {{version.major}} -eq 1 -a {{version.minor}} -gt 65 -a "{{hw.platform}}/{{hw.arch}}" = "linux/aarch64"; then
+      export RUSTFLAGS="-Ctarget-feature=-outline-atomics"
+    fi
+
     ./configure $ARGS
     make install
 
