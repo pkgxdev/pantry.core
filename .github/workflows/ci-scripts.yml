@@ -14,6 +14,6 @@ jobs:
       - uses: teaxyz/setup@v0
       - run: |
           for x in *.ts; do
-            deno check --unstable --import-map=../import-map.json $x
+            tea deno check --unstable --import-map=../import-map.json $x
           done
         working-directory: scripts
