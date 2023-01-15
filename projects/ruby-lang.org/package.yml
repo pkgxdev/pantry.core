@@ -48,6 +48,7 @@ test:
     #NOTE rubygems.org depends on us… so it may be difficult to test this
     # in a bootstrap scenario…
     rubygems.org: '*'
+    tea.xyz/gx/cc: c99  # for native extensions
   script: |
     ruby -e 'puts "Hello World!"'
     gem install hexapdf -v 0.28.0
