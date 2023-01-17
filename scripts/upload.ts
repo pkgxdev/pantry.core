@@ -78,7 +78,7 @@ async function put(key: string, body: string | Path | Uint8Array, bucket: S3Buck
   } else if (typeof body === "string") {
     body = encode(body)
   }
-  return retry(bucket.putObject(key, body))
+  return retry(()=>bucket.putObject(key, body))
 }
 
 //------------------------------------------------------------------------- main
