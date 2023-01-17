@@ -11,9 +11,9 @@ dependencies:
   curl.se: '>=5'
   perl.org: '*'
 
-# runtime:
-#   env:
-#     GIT_TEMPLATE_DIR: '{{prefix}}/share/git-core/templates'
+runtime:
+  env:
+    GIT_TEMPLATE_DIR: '{{prefix}}/share/git-core/templates'
 
 build:
   dependencies:
@@ -46,7 +46,6 @@ test: |
 
   # check that the templates can be found
   if grep -q 'warning: templates not found in' clone-output.txt; then
-    echo "templates not found"
     false
   fi
 
