@@ -78,6 +78,7 @@ async function put(key: string, body: string | Path | Uint8Array, bucket: S3Buck
   } else if (typeof body === "string") {
     body = encode(body)
   }
+  // @ts-ignore typescript doesn't narrow the types properly here
   return retry(()=>bucket.putObject(key, body))
 }
 
