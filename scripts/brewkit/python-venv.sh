@@ -20,7 +20,7 @@ mkdir bin
 mv libexec/bin/$CMD_NAME libexec/bin/teaxyz.py
 
 cd bin
-ln -s ../libexec/bin/teaxyz.py $CMD_NAME
+ln -s ../libexec/bin/$CMD_NAME $CMD_NAME
 
 cd ../libexec/bin
 fix-shebangs.ts *
