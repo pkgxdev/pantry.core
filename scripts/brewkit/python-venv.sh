@@ -17,10 +17,10 @@ cd "$PREFIX"
 libexec/bin/pip install -v --no-binary :all: --ignore-installed $CMD_NAME
 mkdir bin
 
-mv libexec/bin/$CMD_NAME libexec/bin/$CMD_NAME.py
+mv libexec/bin/$CMD_NAME libexec/bin/teaxyz.py
 
 cd bin
-ln -s ../libexec/bin/$CMD_NAME $CMD_NAME
+ln -s ../libexec/bin/teaxyz.py $CMD_NAME
 
 cd ../libexec/bin
 fix-shebangs.ts *
@@ -36,7 +36,7 @@ else
   LIBEXEC="\$(cd "\$(dirname "\$self")" && pwd)"
 fi
 source "\$LIBEXEC/activate"
-exec "\$LIBEXEC"/$CMD_NAME.py "\$@"
+exec "\$LIBEXEC"/teaxyz.py "\$@"
 EOF
 chmod +x $CMD_NAME
 
