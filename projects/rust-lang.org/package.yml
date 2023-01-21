@@ -36,8 +36,6 @@ dependencies:
 build:
   dependencies:
     tea.xyz/gx/make: '*'  #FIXME surely we don’t need make AND ninja
-    linux/aarch64:
-      gnu.org/gcc: '*' # libatomic
     cmake.org: ^3.20
     ninja-build.org: ^1.10
     python.org: 3
@@ -58,8 +56,6 @@ build:
 
     rm -rf {{prefix}}/share/doc
   env:
-    linux/aarch64:
-      RUSTFLAGS: "-Clink_arg=-L{{deps.gnu.org/gcc.prefix}}/lib64"
     ARGS:
       - --enable-vendor
       - --prefix={{ prefix }}
