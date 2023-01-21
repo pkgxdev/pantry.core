@@ -56,6 +56,9 @@ build:
 
     rm -rf {{prefix}}/share/doc
   env:
+    linux/aarch64:
+      ARGS:
+        - --build=aarch64-unknown-linux-gnu
     ARGS:
       - --enable-vendor
       - --prefix={{ prefix }}
