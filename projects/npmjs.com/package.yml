@@ -12,6 +12,10 @@ provides:
 dependencies:
   nodejs.org: '>=14'
 
+env:
+  runtime:
+    npm_config_prefix: ${{prefix}}
+
 build:
   script:
     node . install --global --prefix={{prefix}}
