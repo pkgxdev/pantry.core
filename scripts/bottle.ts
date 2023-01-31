@@ -1,4 +1,4 @@
-#!/usr/bin/env -S tea -E
+#!/usr/bin/env -S tea deno
 
 /* ---
 dependencies:
@@ -14,7 +14,6 @@ args:
   - --allow-env
   - --allow-read
   - --allow-write
-  - --import-map={{ srcroot }}/import-map.json
 --- */
 
 import { Installation } from "types"

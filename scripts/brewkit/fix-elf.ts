@@ -1,4 +1,4 @@
-#!/usr/bin/env -S tea -E
+#!/usr/bin/env -S tea deno
 
 /*---
 args:
@@ -8,7 +8,6 @@ args:
   - --allow-env
   - --allow-read
   - --allow-write={{tea.prefix}}
-  - --import-map={{ srcroot }}/import-map.json
 dependencies:
   nixos.org/patchelf: '*'
   darwinsys.com/file: 5

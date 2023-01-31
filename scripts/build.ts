@@ -1,4 +1,4 @@
-#!/usr/bin/env -S tea -E
+#!/usr/bin/env -S tea deno
 
 /*---
 args:
@@ -10,7 +10,6 @@ args:
   - --allow-write={{tea.prefix}}
   - --allow-env
   - --unstable
-  - --import-map={{ srcroot }}/import-map.json
 ---*/
 
 import { usePantry, useFlags, useCellar, useInventory, usePrefix } from "hooks"

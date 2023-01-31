@@ -1,4 +1,4 @@
-#!/usr/bin/env -S tea -E
+#!/usr/bin/env -S tea deno
 
 // returns all pantry entries as `[{ name, path }]`
 
@@ -8,7 +8,6 @@ args:
   - run
   - --allow-env
   - --allow-read
-  - --import-map={{ srcroot }}/import-map.json
 ---*/
 
 import Path from "path"

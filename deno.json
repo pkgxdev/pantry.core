@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "allowJs": false,
+    "strict": true
+  },
+  "tasks": {
+    "typecheck": "deno check --unstable scripts/*.ts"
+  },
+  "fmt": {
+    "files": {
+      "exclude": [
+        "./"
+      ]
+    }
+  },
+  "tea": {
+    "dependencies": {
+      "deno.land": "^1.30"
+    }
+  },
+  "importMap": "https://raw.githubusercontent.com/teaxyz/cli/v0.21/import-map.json"
+}
