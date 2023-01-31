@@ -55,12 +55,6 @@ jobs:
         with:
           path: pantry
 
-      - name: co cli
-        uses: actions/checkout@v3
-        with:
-          path: cli
-          repository: teaxyz/cli
-
       - uses: teaxyz/setup@v0
         id: tea
         with:
@@ -77,8 +71,6 @@ jobs:
             for x in /usr/local/*; do sudo mv $x /tmp; done
             ;;
           esac
-
-          ln -s $GITHUB_WORKSPACE/cli /opt/tea.xyz/var/cli
 
           # in case this PR contains updates to the scripts
           #TODO only do for PRs
@@ -148,11 +140,6 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          path: tea.xyz/var/cli
-          repository: teaxyz/cli
-
-      - uses: actions/checkout@v3
-        with:
           path: pantry
 
       - uses: teaxyz/setup@v0
@@ -198,11 +185,6 @@ jobs:
           - os: [self-hosted, linux, ARM64]
             name: linux+aarch64
     steps:
-      - uses: actions/checkout@v3
-        with:
-          path: tea.xyz/var/cli
-          repository: teaxyz/cli
-
       - uses: actions/checkout@v3
         with:
           path: pantry
