@@ -3,6 +3,8 @@
 // returns all pantry entries as `[{ name, path }]`
 
 /*---
+dependencies:
+  deno.land: ^1.30
 args:
   - deno
   - run

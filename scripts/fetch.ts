@@ -5,6 +5,8 @@ dependencies:
   gnu.org/tar: 1
   tukaani.org/xz: 5
   sourceware.org/bzip2: 1
+dependencies:
+  deno.land: ^1.30
 args:
   - deno
   - run
