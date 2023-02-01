@@ -5,6 +5,7 @@
   },
   "tasks": {
     "typecheck": "deno check --unstable scripts/*.ts"
+    // ^^ doesn't work yet due to lack of glob support
   },
   "fmt": {
     "files": {
