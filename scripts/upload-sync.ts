@@ -1,8 +1,6 @@
-#!/usr/bin/env -S tea
+#!/usr/bin/env tea
 
 /*---
-dependencies:
-  deno.land: ^1.30
 args:
   - deno
   - run

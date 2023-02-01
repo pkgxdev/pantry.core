@@ -1,10 +1,8 @@
-#!/usr/bin/env -S tea
+#!/usr/bin/env tea
 
-// returns all pantry entries as `[{ name, path }]`
+/// returns all pantry entries as `[{ name, path }]`
 
 /*---
-dependencies:
-  deno.land: ^1.30
 args:
   - deno
   - run
