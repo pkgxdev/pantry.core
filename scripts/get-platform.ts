@@ -39,8 +39,8 @@ const output = `os=${rv!.os}\ncontainer=${rv!.container}\n`
 
 Deno.stdout.write(new TextEncoder().encode(output))
 
-if (Deno.env.get("GITHUB_ENV")) {
-  const envFile = Deno.env.get("GITHUB_ENV")!
+if (Deno.env.get("GITHUB_OUTPUT")) {
+  const envFile = Deno.env.get("GITHUB_OUTPUT")!
   await Deno.writeTextFile(envFile, output, { append: true})
 }
 
