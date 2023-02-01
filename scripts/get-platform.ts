@@ -10,73 +10,42 @@ args:
 ---*/
 
 import { panic } from "utils";
-import * as ARGV from "./utils/args.ts"
 
 const platform = Deno.env.get("PLATFORM") ?? panic("$PLATFORM not set")
 
-let rv: RV
+let container = "~"
+let os = ""
+let buildOs = ""
 
 switch(platform) {
   case "darwin+x86-64":
-    rv = { os: "macos-11", container: "~" }
+    os = "macos-11"
+    buildOs = "[self-hosted, macOS, X64]"
     break
-    case "darwin+aarch64":
-      rv = { os: "[self-hosted, macOS, ARM64]", container: "~" }
-      break
-      case "linux+aarch64":
-        rv = { os: "[self-hosted, linux, ARM64]", container: "~" }
-        break
-        case "linux+x86-64":
+  case "darwin+aarch64":
+    os = "[self-hosted, macOS, ARM64]"
+    buildOs = os
+    break
+  case "linux+aarch64":
+    os = "[self-hosted, linux, ARM64]"
+    buildOs = os
+    break
+  case "linux+x86-64":
     // FIXME: we'd like to build on a number of different outputs
     // [ubuntu, debian, ubuntu+infuser]
-    rv = { os: await getLinuxSize(), container: "debian:buster-slim" }
+    os = "ubuntu-latest"
+    buildOs = "[self-hosted, linux, X64]"
+    container = "debian:buster-slim"
     break
   default:
     panic(`Invalid platform description: ${platform}`)
 }
 
-const output = `os=${rv!.os}\ncontainer=${rv!.container}\n`
+const output = `os=${os}\nbuild-os=${buildOs}\ncontainer=${container}\n`
 
 Deno.stdout.write(new TextEncoder().encode(output))
 
 if (Deno.env.get("GITHUB_OUTPUT")) {
   const envFile = Deno.env.get("GITHUB_OUTPUT")!
   await Deno.writeTextFile(envFile, output, { append: true})
-}
-
-async function getLinuxSize(): Promise<string> {
-  const exceptions: { [pkg: string]: number } = {
-    "deno.land": 4,
-    "ziglang.org": 8,
-  }
-
-  const pkgs = await ARGV.toArray(ARGV.pkgs())
-
-  let coreSize = 2
-
-  for (const pkg of pkgs) {
-    coreSize = Math.max(exceptions[pkg.project] || 2, coreSize)
-  }
-
-  return imageName(coreSize)
-}
-
-function imageName(size: number) {
-  switch (size) {
-    case 0:
-    case 1:
-    case 2:
-      return "ubuntu-latest"
-    case 4:
-    case 8:
-    case 16:
-      return `ubuntu-latest-${size}-cores`
-    default:
-      throw new Error("Invalid core size")
-  }
-}
-
-interface RV {
-  os: string
-  container: string
 }

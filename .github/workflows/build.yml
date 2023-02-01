@@ -19,6 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       os: ${{ steps.platform.outputs.os }}
+      build-os: ${{ steps.platform.outputs.build-os }}
       container: ${{ steps.platform.outputs.container }}
     steps:
       - uses: actions/checkout@v3
@@ -32,7 +33,7 @@ jobs:
           TEA_PANTRY_PATH: ${{ github.workspace }}
 
   build:
-    runs-on: ${{ needs.get-platform.outputs.os }}
+    runs-on: ${{ needs.get-platform.outputs.build-os }}
     needs: [get-platform]
     container: ${{ needs.get-platform.outputs.container }}
     steps:
