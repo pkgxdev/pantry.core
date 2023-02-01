@@ -48,13 +48,8 @@ jobs:
           prefix: /opt
 
       - name: sanitize macOS runners
-        #FIXME we need a clean install of macOS for builds
-        #TODO stop using GHA images or chroot or something
-        run: |
-          if test ${{ matrix.platform.os }} = macos-11
-          then
-            sudo mv $x/* /tmp
-          fi
+        if: matrix.platform.os == 'macos-11'
+        run: sudo mv /usr/local/bin/* /tmp/
 
       - name: configure scripts PATH
         run: echo "$PWD/scripts:$TEA_PREFIX/tea.xyz/var/pantry/scripts" >> $GITHUB_PATH
