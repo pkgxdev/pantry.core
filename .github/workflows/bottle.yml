@@ -15,14 +15,15 @@ jobs:
   get-platform:
     runs-on: ubuntu-latest
     outputs:
-      os: ${{ env.OS }}
-      container: ${{ env.CONTAINER }}
+      os: ${{ steps.platform.outputs.OS }}
+      container: ${{ steps.platform.outputs.CONTAINER }}
     steps:
       - uses: actions/checkout@v3
         with:
           repository: teaxyz/pantry.core
       - uses: teaxyz/setup@v0
       - run: scripts/get-platform.ts ${{ inputs.projects }}
+        id: platform
         env:
           PLATFORM: ${{ inputs.platform }}
 
@@ -52,12 +53,8 @@ jobs:
           srcroot: tea.xyz/var/pantry
           prefix: ${{ github.workspace }}
 
-      - run: |
-          # in case this PR contains updates to the scripts
-          #TODO only do for PRs
-          if test "$GITHUB_REPOSITORY" = "teaxyz/pantry.core"; then
-            cp -rv $GITHUB_WORKSPACE/pantry/scripts/* $(tea --prefix)/tea.xyz/var/pantry/scripts
-          fi
+      - name: configure scripts PATH
+        run: echo "$PWD/scripts:$TEA_PREFIX/tea.xyz/var/pantry/scripts" >> $GITHUB_PATH
 
       - uses: actions/download-artifact@v3
         if: ${{ inputs.new-version }}
@@ -88,14 +85,14 @@ jobs:
       # FIXME: replace this with a tea script based on https://localazy.com/blog/how-to-automatically-sign-macos-apps-using-github-actions
       # github has a doc with similar content, but it's not returning to me atm.
       - uses: apple-actions/import-codesign-certs@d54750db52a4d3eaed0fc107a8bab3958f3f7494
-        if: inputs.platform == 'darwin+aarch64' || inputs.platform == 'darwin+x86-64'
+        if: startsWith(inputs.platform, 'darwin+')
         with:
           p12-file-base64: ${{ secrets.APPLE_CERTIFICATE_P12 }}
           p12-password: ${{ secrets.APPLE_CERTIFICATE_P12_PASSWORD }}
 
       # Codesign libs and bins
       - name: Codesign package
-        if: inputs.platform == 'darwin+aarch64' || inputs.platform == 'darwin+x86-64'
+        if: startsWith(inputs.platform, 'darwin+')
         run: |
           for PKG in ${{ env.relative-paths }}; do
             find /opt/$PKG -name '*.so' -or -name '*.dylib' -print0 | \
@@ -106,7 +103,7 @@ jobs:
 
       # This isn't very informative, but even a no-op is safer than none
       - name: Check codesigning
-        if: inputs.platform == 'darwin+aarch64' || inputs.platform == 'darwin+x86-64'
+        if: startsWith(inputs.platform, 'darwin+')
         run: |
           for PKG in ${{ env.relative-paths }}; do
             for SIG in `find /opt/$PKG -name '*.so' -or -name '*.dylib'` `find /opt/$PKG/bin -type f`; do
@@ -198,12 +195,8 @@ jobs:
           done
         working-directory: ${{ steps.tea.outputs.prefix }}
 
-      - run: |
-          # in case this PR contains updates to the scripts
-          #TODO only do for PRs
-          if test "$GITHUB_REPOSITORY" = "teaxyz/pantry.core"; then
-            cp -rv $GITHUB_WORKSPACE/pantry/scripts/* $(tea --prefix)/tea.xyz/var/pantry/scripts
-          fi
+      - name: configure scripts PATH
+        run: echo "$PWD/scripts:$TEA_PREFIX/tea.xyz/var/pantry/scripts" >> $GITHUB_PATH
 
       - name: upload bottles
         id: upload
