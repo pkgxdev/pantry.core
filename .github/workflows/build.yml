@@ -127,7 +127,7 @@ jobs:
         with:
           name: ${{ matrix.platform.name }}
 
-      - run: tar xzf artifacts.tgz
+      - run: tar xzf ${{ github.workspace }}/artifacts.tgz
         working-directory: ${{ steps.tea.outputs.prefix }}
 
       - run: test.ts ${{ inputs.projects }}
