@@ -1,0 +1,24 @@
+name: index-data
+
+on:
+  workflow_call:
+    inputs:
+      projects:
+        required: true
+        type: string
+
+jobs:
+  queue_detail_ingestion:
+    runs-on: ubuntu-latest
+    needs: [bottle, upload]
+    steps:
+      - uses: actions/checkout@v3
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+      # - name: get github url if exists fro package.yml
+      #   run: bash extract projects/env.relative-paths
+      # TODO: aws sqs send-message --queue-url ${{secrets.SQS_GENERATE_PACKAGE_DETAILS_URL}} --message-body {s3_dist_key: env.relative-paths, github_url} dedup key 
