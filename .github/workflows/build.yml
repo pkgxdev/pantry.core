@@ -33,7 +33,7 @@ jobs:
           TEA_PANTRY_PATH: ${{ github.workspace }}
 
   build:
-    runs-on: ${{ needs.get-platform.outputs.build-os }}
+    runs-on: ${{ fromJson(needs.get-platform.outputs.build-os) }}
     needs: [get-platform]
     container: ${{ needs.get-platform.outputs.container }}
     steps:
@@ -93,7 +93,7 @@ jobs:
 
   test:
     needs: [get-platform, build]
-    runs-on: ${{ needs.get-platform.outputs.os }}
+    runs-on: ${{ fromJson(needs.get-platform.outputs.os) }}
     outputs:
       HAS_SECRETS: ${{ env.HAS_SECRETS }}
     container: ${{ needs.get-platform.outputs.container }}
