@@ -28,7 +28,7 @@ jobs:
           srcroot: tea.xyz/var/pantry
           prefix: ${{ github.workspace }}
 
-      - run: scripts/index-packages.ts ${{ inputs.projects }}
+      - run: ./pantry/scripts/index-packages.ts ${{ inputs.projects }}
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
