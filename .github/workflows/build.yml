@@ -20,7 +20,7 @@ jobs:
     outputs:
       os: ${{ steps.platform.outputs.os }}
       build-os: ${{ steps.platform.outputs.build-os }}
-      container: ${{ steps.platform.outputs.container }}
+      testMatrix: ${{ steps.platform.outputs.testMatrix }}
     steps:
       - uses: actions/checkout@v3
         with:
@@ -35,7 +35,6 @@ jobs:
   build:
     runs-on: ${{ fromJson(needs.get-platform.outputs.build-os) }}
     needs: [get-platform]
-    container: ${{ needs.get-platform.outputs.container }}
     steps:
       - uses: actions/checkout@v3
 
@@ -93,10 +92,13 @@ jobs:
 
   test:
     needs: [get-platform, build]
-    runs-on: ${{ fromJson(needs.get-platform.outputs.os) }}
+    runs-on: ${{ matrix.platform.os }}
+    strategy:
+      matrix:
+        platform: ${{ fromJson(needs.get-platform.outputs.testMatrix) }}
     outputs:
       HAS_SECRETS: ${{ env.HAS_SECRETS }}
-    container: ${{ needs.get-platform.outputs.container }}
+    container: ${{ matrix.platform.container }}
     steps:
       - uses: actions/checkout@v3
       - uses: teaxyz/setup@v0

@@ -16,7 +16,6 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       os: ${{ steps.platform.outputs.OS }}
-      container: ${{ steps.platform.outputs.CONTAINER }}
     steps:
       - uses: actions/checkout@v3
         with:
