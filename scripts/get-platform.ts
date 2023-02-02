@@ -49,7 +49,7 @@ switch(platform) {
 
 const output = `os=${JSON.stringify(os)}\n` +
   `build-os=${JSON.stringify(buildOs)}\n` +
-  `testMatrix=${JSON.stringify(testMatrix)}\n`
+  `test-matrix=${JSON.stringify(testMatrix)}\n`
 
 Deno.stdout.write(new TextEncoder().encode(output))
 

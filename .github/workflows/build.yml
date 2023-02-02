@@ -20,7 +20,7 @@ jobs:
     outputs:
       os: ${{ steps.platform.outputs.os }}
       build-os: ${{ steps.platform.outputs.build-os }}
-      testMatrix: ${{ steps.platform.outputs.testMatrix }}
+      test-matrix: ${{ steps.platform.outputs.test-matrix }}
     steps:
       - uses: actions/checkout@v3
         with:
@@ -95,7 +95,7 @@ jobs:
     runs-on: ${{ matrix.platform.os }}
     strategy:
       matrix:
-        platform: ${{ fromJson(needs.get-platform.outputs.testMatrix) }}
+        platform: ${{ fromJson(needs.get-platform.outputs.test-matrix) }}
     outputs:
       HAS_SECRETS: ${{ env.HAS_SECRETS }}
     container: ${{ matrix.platform.container }}
