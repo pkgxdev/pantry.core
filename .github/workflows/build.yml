@@ -7,9 +7,6 @@ on:
         required: true
         type: string
 
-env:
-  TEA_PANTRY_PATH: ${{ github.workspace }}
-
 jobs:
   check-core-sizes:
     runs-on: ubuntu-latest
@@ -20,6 +17,7 @@ jobs:
         with:
           repository: teaxyz/pantry.core
       - uses: teaxyz/setup@v0
+      - run: echo "TEA_PANTRY_PATH=${{ env.GITHUB_WORKSPACE }}" >> $GITHUB_ENV
       - run: scripts/check-core-sizes.ts ${{ inputs.projects }}
 
   build:
@@ -52,7 +50,9 @@ jobs:
         run: sudo mv /usr/local/bin/* /tmp/
 
       - name: configure scripts PATH
-        run: echo "$PWD/scripts:$TEA_PREFIX/tea.xyz/var/pantry/scripts" >> $GITHUB_PATH
+        run: |
+          echo "$PWD/scripts:$TEA_PREFIX/tea.xyz/var/pantry/scripts" >> $GITHUB_PATH
+          echo "TEA_PANTRY_PATH=${{ env.GITHUB_WORKSPACE }}" >> $GITHUB_ENV
 
       - run: sort.ts ${{ inputs.projects }}
         id: sorted
@@ -121,13 +121,15 @@ jobs:
         id: tea
 
       - name: configure scripts PATH
-        run: echo "$PWD/scripts:$TEA_PREFIX/tea.xyz/var/pantry/scripts" >> $GITHUB_PATH
+        run: |
+          echo "$PWD/scripts:$TEA_PREFIX/tea.xyz/var/pantry/scripts" >> $GITHUB_PATH
+          echo "TEA_PANTRY_PATH=${{ env.GITHUB_WORKSPACE }}" >> $GITHUB_ENV
 
       - uses: actions/download-artifact@v3
         with:
           name: ${{ matrix.platform.name }}
 
-      - run: tar xzf ${{ github.workspace }}/artifacts.tgz
+      - run: tar xzf $GITHUB_WORKSPACE/artifacts.tgz
         working-directory: ${{ steps.tea.outputs.prefix }}
 
       - run: test.ts ${{ inputs.projects }}
@@ -160,7 +162,9 @@ jobs:
         id: tea
 
       - name: configure scripts PATH
-        run: echo "$PWD/scripts:$TEA_PREFIX/tea.xyz/var/pantry/scripts" >> $GITHUB_PATH
+        run: |
+          echo "$PWD/scripts:$TEA_PREFIX/tea.xyz/var/pantry/scripts" >> $GITHUB_PATH
+          echo "TEA_PANTRY_PATH=${{ env.GITHUB_WORKSPACE }}" >> $GITHUB_ENV
 
       - uses: actions/download-artifact@v3
         with:
