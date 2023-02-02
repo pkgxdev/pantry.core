@@ -18,4 +18,3 @@ jobs:
           TEA_PANTRY_PATH: ${{ github.workspace }}
           AWS_REGION: us-east-1
           SQS_GENERATE_PACKAGE_DETAILS_URL: ${{ secrets.SQS_GENERATE_PACKAGE_DETAILS_URL }}
-          TEA_PANTRY_PATH: ${{ github.workspace }}
