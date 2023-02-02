@@ -43,7 +43,7 @@ jobs:
         id: tea
         with:
           srcroot: tea.xyz/var/pantry
-          prefix: $GITHUB_WORKSPACE
+          prefix: ${{ github.workspace }}
 
       - run: |
           # in case this PR contains updates to the scripts
@@ -188,7 +188,7 @@ jobs:
         id: tea
         with:
           srcroot: tea.xyz/var/pantry
-          prefix: $GITHUB_WORKSPACE
+          prefix:  ${{ github.workspace }}
 
       - uses: actions/download-artifact@v3
         with:
