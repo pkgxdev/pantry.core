@@ -1,4 +1,4 @@
-#!/usr/bin/env -S tea deno
+#!/usr/bin/env -S tea -E
 
 /* ---
 args:
