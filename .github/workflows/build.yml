@@ -69,7 +69,8 @@ jobs:
         working-directory: ${{ steps.tea.outputs.prefix }}
 
       # cache data we'll need in the bottling job
-      - run: |
+      - name: assemble artifact metadata
+        run: |
           echo ${{ steps.build.outputs.pkgs }} >built
           echo ${{ steps.build.outputs.relative-paths }} >relative-paths
           echo ${{ steps.build.outputs.srcs }} >srcs
@@ -77,7 +78,8 @@ jobs:
 
       # tarring ourselves ∵ GHA-artifacts (ludicrously) lose permissions
       # /ref https://github.com/actions/upload-artifact/issues/38
-      - run:
+      - name: create artifacts.tgz
+        run:
           tar czf $GITHUB_WORKSPACE/artifacts.tgz
             ${{ steps.build.outputs.relative-paths }}
             ${{ steps.build.outputs.srcs-relative-paths }}
@@ -116,9 +118,7 @@ jobs:
     container: ${{ matrix.platform.container }}
     steps:
       - uses: actions/checkout@v3
-
       - uses: teaxyz/setup@v0
-        id: tea
 
       - name: configure scripts PATH
         run: echo "$PWD/scripts:$TEA_PREFIX/tea.xyz/var/pantry/scripts" >> $GITHUB_PATH
@@ -127,14 +127,15 @@ jobs:
         with:
           name: ${{ matrix.platform.name }}
 
-      - run: tar xzf $GITHUB_WORKSPACE/artifacts.tgz
-        working-directory: ${{ steps.tea.outputs.prefix }}
+      - name: extract bottles
+        run: tar xzf artifacts.tgz -C $TEA_PREFIX
 
       - run: test.ts ${{ inputs.projects }}
         env:
           TEA_PANTRY_PATH: ${{ github.workspace }}
 
-      - run:
+      - name: post
+        run:
           echo "HAS_SECRETS=$HAS_SECRETS" >>$GITHUB_ENV
         env:
           HAS_SECRETS: ${{ secrets.AWS_S3_CACHE != null }}
@@ -157,9 +158,7 @@ jobs:
             name: linux+aarch64
     steps:
       - uses: actions/checkout@v3
-
       - uses: teaxyz/setup@v0
-        id: tea
 
       - name: configure scripts PATH
         run: echo "$PWD/scripts:$TEA_PREFIX/tea.xyz/var/pantry/scripts" >> $GITHUB_PATH
