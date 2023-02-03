@@ -10,7 +10,8 @@ provides:
   - bin/npx
 
 dependencies:
-  nodejs.org: '>=14'
+  # nodejs.org: '>=14'
+  nodejs.org: '>=14<19.5'
 
 build:
   dependencies:
