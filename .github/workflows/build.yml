@@ -126,15 +126,9 @@ jobs:
         env:
           HAS_SECRETS: ${{ secrets.AWS_S3_CACHE != null }}
 
-  wut:
-    runs-on: ubuntu-latest
-    needs: [test]
-    steps:
-    - run: echo ${{ inputs.new-version }}
-
   bottle:
     needs: [test]
-    if: inputs.new-version == 'true'
+    if: inputs.new-version == true
     uses: ./.github/workflows/bottle.yml
     with:
       new-version: ${{ inputs.new-version }}
@@ -143,7 +137,7 @@ jobs:
 
   complain:
     needs: [test, bottle]
-    if: inputs.new-version == 'true' && failure()
+    if: inputs.new-version == true && failure()
     uses: ./.github/workflows/complain.yml
     with:
       projects: ${{ inputs.projects }}
