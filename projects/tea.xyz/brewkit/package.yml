@@ -16,7 +16,9 @@ build:
 test:
   dependencies:
     git-scm.org: '*'
+    cli.github.com: '*'
   script: |
+    export GITHUB_TOKEN=$(gh auth token)
     git clone https://github.com/teaxyz/pantry.core
     cd pantry.core
     fetch zlib.net -o foo
