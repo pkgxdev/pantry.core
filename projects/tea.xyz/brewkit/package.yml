@@ -14,12 +14,6 @@ build:
   mv bin libexec share deno.* {{prefix}}
 
 test:
-  dependencies:
-    git-scm.org: '*'
-    cli.github.com: '*'
-  script: |
-    export GITHUB_TOKEN=$(gh auth token)
-    git clone https://github.com/teaxyz/pantry.core
-    cd pantry.core
-    fetch zlib.net -o foo
-    test -f foo
+  test zlib.net
+  # we would like to test builds but we need a `GITHUB_TOKEN` and
+  # currently that is not possible
