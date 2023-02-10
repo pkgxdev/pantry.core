@@ -19,5 +19,5 @@ test:
   script: |
     git clone https://github.com/teaxyz/pantry.core
     cd pantry.core
-    fetch tea.xyz/brewkit -o foo
+    fetch zlib.net -o foo
     test -f foo
