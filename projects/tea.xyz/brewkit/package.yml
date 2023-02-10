@@ -1,0 +1,23 @@
+distributable:
+  url: https://github.com/teaxyz/brewkit/archive/refs/tags/v{{ version }}.tar.gz
+  strip-components: 1
+
+versions:
+   github: teaxyz/brewkit
+
+dependencies:
+  deno.land: ^1.30
+  gnu.org/bash: '*'
+  tea.xyz: ^0
+
+build:
+  mv bin libexec share deno.* {{prefix}}
+
+test:
+  dependencies:
+    git-scm.org: '*'
+  script: |
+    git clone https://github.com/teaxyz/pantry.core
+    cd pantry.core
+    fetch tea.xyz/brewkit -o foo
+    test -f foo
