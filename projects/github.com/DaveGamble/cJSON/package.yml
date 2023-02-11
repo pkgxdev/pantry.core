@@ -31,7 +31,7 @@ test:
     #include <cjson/cJSON.h>
     int main()
     {
-      char *s = "{\\"key\\":\\"value\\"}";
+      char *s = "{\"key\":\"value\"}";
       cJSON *json = cJSON_Parse(s);
       if (!json) {
           return 1;
