@@ -23,6 +23,8 @@ build:
       - -DCMAKE_BUILD_TYPE=Release
 
 test:
+  dependencies:
+    tea.xyz/gx/cc: c99
   script: |
     mv $FIXTURE $FIXTURE.c
     cc $FIXTURE.c -lcjson
