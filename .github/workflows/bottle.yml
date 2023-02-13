@@ -25,7 +25,7 @@ jobs:
       - uses: actions/checkout@v3
         with:
           repository: teaxyz/pantry.core
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         with:
           path: $HOME/.cache/deno
           key: ${{ runner.os }}-deno-get-platform-${{ hashFiles('deno.jsonc')}}
@@ -38,9 +38,6 @@ jobs:
   bottle:
     needs: [get-platform]
     runs-on: ${{ fromJson(needs.get-platform.outputs.os) }}
-    defaults:
-      run:
-        working-directory: tea.xyz/var/pantry
     outputs:
       srcs: ${{ env.srcs }}
       built: ${{ env.built }}
@@ -49,12 +46,13 @@ jobs:
       - uses: teaxyz/setup@v0
         id: tea
         with:
-          srcroot: tea.xyz/var/pantry
+          srcroot: null
           prefix: ${{ github.workspace }}
-      - uses: actions/cache@v2
+
+      - uses: actions/cache@v3
         with:
           path: ${{ needs.get-platform.outputs.cache-set }}
-          key: ${{ runner.os }}-deno-bottle-${{ hashFiles('.tea/tea.xyz/var/pantry/deno.jsonc')}}
+          key: ${{ runner.os }}-deno-bottle-${{ hashFiles('tea.xyz/var/pantry/deno.jsonc')}}
 
       - name: configure scripts PATH
         run: echo "$TEA_PREFIX/tea.xyz/var/pantry/scripts" >> $GITHUB_PATH
@@ -63,7 +61,6 @@ jobs:
         if: ${{ inputs.new-version }}
         with:
           name: ${{ inputs.platform }}
-          path: tea.xyz/var/pantry
 
       - run: fetch-pr-artifacts.ts ${{ github.repository }} ${{ github.sha }} ${{ inputs.platform }} >>$GITHUB_ENV
         if: ${{ !inputs.new-version }}
@@ -73,52 +70,25 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
-      - run: tar xzf artifacts.tgz -C ${{ steps.tea.outputs.prefix }}
+      - run: tar xzvf artifacts.tgz
 
       - run: |
           for file in built relative-paths srcs; do
             echo "$file=$(cat $file)" >>$GITHUB_ENV
           done
-        working-directory: ${{ steps.tea.outputs.prefix }}
 
-      # the next three steps bless our code for Apple. It might be the case they should be
-      # encapulated separately.
-      # FIXME: using an explicit commit in a PR isn't great, but the last release was almost 3 years
-      # ago, and we need bugfixes.
-      # FIXME: replace this with a tea script based on https://localazy.com/blog/how-to-automatically-sign-macos-apps-using-github-actions
-      # github has a doc with similar content, but it's not returning to me atm.
-      - uses: apple-actions/import-codesign-certs@d54750db52a4d3eaed0fc107a8bab3958f3f7494
+      - uses: actions/checkout@v3
         if: startsWith(inputs.platform, 'darwin+')
         with:
-          p12-file-base64: ${{ secrets.APPLE_CERTIFICATE_P12 }}
-          p12-password: ${{ secrets.APPLE_CERTIFICATE_P12_PASSWORD }}
-
-      # Codesign libs and bins
-      - name: Codesign package
+          path: pantry
+          repository: teaxyz/pantry.core
+      - uses: ./pantry/.github/actions/apple-signing
         if: startsWith(inputs.platform, 'darwin+')
-        run: |
-          for PKG in ${{ env.relative-paths }}; do
-            find /opt/$PKG -name '*.so' -or -name '*.dylib' -print0 | \
-              xargs -0 codesign -s "Developer ID Application: Tea Inc. (7WV56FL599)" --force -v --deep --timestamp --preserve-metadata=entitlements -o runtime || true
-            codesign -s "Developer ID Application: Tea Inc. (7WV56FL599)" -v --force --deep --timestamp --preserve-metadata=entitlements -o runtime /opt/$PKG/bin/* || true
-          done
-        working-directory: ${{ steps.tea.outputs.prefix }}
-
-      # This isn't very informative, but even a no-op is safer than none
-      - name: Check codesigning
-        if: startsWith(inputs.platform, 'darwin+')
-        run: |
-          for PKG in ${{ env.relative-paths }}; do
-            for SIG in `find /opt/$PKG -name '*.so' -or -name '*.dylib'` `find /opt/$PKG/bin -type f`; do
-              codesign -vvv --deep --strict "$SIG"
-            done
-          done
-        working-directory: ${{ steps.tea.outputs.prefix }}
-
-      # Needed for self-hosted runner, since it doesn't destroy itself automatically.
-      - name: Delete keychain
-        if: always() && inputs.platform == 'darwin+aarch64'
-        run: security delete-keychain signing_temp.keychain
+        with:
+            p12-file-base64: ${{ secrets.APPLE_CERTIFICATE_P12 }}
+            p12-password: ${{ secrets.APPLE_CERTIFICATE_P12_PASSWORD }}
+            identity: "Developer ID Application: Tea Inc. (7WV56FL599)"
+            paths: ${{ env.relative-paths}}
 
       - run: |
           tea +gnupg.org gpg-agent --daemon || true
@@ -149,13 +119,11 @@ jobs:
 
           SRCS=$(echo $srcs | tr -d '~')
 
-          tar cf $GITHUB_WORKSPACE/artifacts.tar \
+          tar cf artifacts.tar \
             $SRCS \
             ${{ steps.bottle-gz.outputs.bottles }} \
             ${{ steps.bottle-xz.outputs.bottles }} \
             bottles checksums signatures
-
-        working-directory: ${{ steps.tea.outputs.prefix }}
 
       - name: upload artifacts
         uses: actions/upload-artifact@v3
@@ -167,35 +135,31 @@ jobs:
   upload:
     needs: [bottle]
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: tea.xyz/var/pantry
     steps:
       - uses: teaxyz/setup@v0
         id: tea
         with:
-          srcroot: tea.xyz/var/pantry
-          prefix:  ${{ github.workspace }}
+          srcroot: null
+          prefix: ${{ github.workspace }}
 
-      - uses: actions/cache@v2
+      - name: configure scripts PATH
+        run: echo "${{ steps.tea.outputs.prefix }}/tea.xyz/var/pantry/scripts" >> $GITHUB_PATH
+
+      - uses: actions/cache@v3
         with:
           path: $HOME/.cache/deno
-          key: ${{ runner.os }}-deno-bottle-${{ hashFiles('.tea/tea.xyz/var/pantry/deno.jsonc')}}
+          key: ${{ runner.os }}-deno-bottle-${{ hashFiles('tea.xyz/var/pantry/deno.jsonc')}}
 
       - uses: actions/download-artifact@v3
         with:
           name: ${{ inputs.platform }}-bottles
 
       - run: |
-          tar xvf $GITHUB_WORKSPACE/artifacts.tar
+          tar xvf artifacts.tar
 
           for file in bottles checksums signatures; do
             echo "$file=$(cat $file)" >>$GITHUB_ENV
           done
-        working-directory: ${{ steps.tea.outputs.prefix }}
-
-      - name: configure scripts PATH
-        run: echo "$TEA_PREFIX/tea.xyz/var/pantry/scripts" >> $GITHUB_PATH
 
       - name: upload bottles
         id: upload

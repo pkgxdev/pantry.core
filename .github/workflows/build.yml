@@ -27,7 +27,7 @@ jobs:
       - uses: actions/checkout@v3
         with:
           repository: teaxyz/pantry.core
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         with:
           path: $HOME/.cache/deno
           key: ${{ runner.os }}-deno-get-platform-${{ hashFiles('deno.jsonc')}}
@@ -44,13 +44,15 @@ jobs:
     needs: [get-platform]
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         with:
           path: ${{ needs.get-platform.outputs.cache-set }}
           key: ${{ runner.os }}-deno-build-${{ hashFiles('deno.jsonc')}}
+
       - uses: teaxyz/setup@v0
         id: tea
         with:
+          srcroot: null
           prefix: /opt
 
       - name: sanitize macOS runners
@@ -62,18 +64,11 @@ jobs:
           echo "$PWD/scripts:$TEA_PREFIX/tea.xyz/var/pantry/scripts" >> $GITHUB_PATH
           echo "TEA_PANTRY_PATH=$GITHUB_WORKSPACE" >> $GITHUB_ENV
 
-      - run: sort.ts ${{ inputs.projects }}
-        id: sorted
-
-      - run: build.ts ${{ steps.sorted.outputs.pkgs }}
+      - run: tea +tea.xyz/brewkit build ${{ inputs.projects }}
         id: build
         env:
           GITHUB_TOKEN: ${{ github.token }}
           FORCE_UNSAFE_CONFIGURE: 1  # some configure scripts refuse to run as root
-
-      - name: delete `.la` files
-        run: find . -name '*.la' -delete
-        working-directory: ${{ steps.tea.outputs.prefix }}
 
       # cache data we'll need in the bottling job
       - name: assemble artifact metadata
@@ -87,7 +82,7 @@ jobs:
       # /ref https://github.com/actions/upload-artifact/issues/38
       - name: create artifacts.tgz
         run:
-          tar czf $GITHUB_WORKSPACE/artifacts.tgz
+          tar czvf $GITHUB_WORKSPACE/artifacts.tgz
             ${{ steps.build.outputs.relative-paths }}
             ${{ steps.build.outputs.srcs-relative-paths }}
             built relative-paths srcs
@@ -112,14 +107,13 @@ jobs:
     container: ${{ matrix.platform.container }}
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/cache@v2
+
+      - uses: actions/cache@v3
         with:
           path: ${{ needs.get-platform.outputs.cache-set }}
           key: ${{ runner.os }}-deno-test-${{ hashFiles('deno.jsonc')}}
-      - uses: teaxyz/setup@v0
 
-      - name: configure scripts PATH
-        run: echo "$PWD/scripts:$TEA_PREFIX/tea.xyz/var/pantry/scripts" >> $GITHUB_PATH
+      - uses: teaxyz/setup@v0
 
       - uses: actions/download-artifact@v3
         with:
@@ -128,7 +122,7 @@ jobs:
       - name: extract bottles
         run: tar xzf artifacts.tgz -C $TEA_PREFIX
 
-      - run: test.ts ${{ inputs.projects }}
+      - run: tea +tea.xyz/brewkit test ${{ inputs.projects }}
         env:
           TEA_PANTRY_PATH: ${{ github.workspace }}
 
@@ -163,7 +157,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         with:
           path: $HOME/.cache/deno
           key: ${{ runner.os }}-deno-stage-${{ hashFiles('deno.jsonc')}}
