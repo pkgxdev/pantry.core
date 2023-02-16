@@ -29,8 +29,8 @@ test:
   script: |
     gem install awesome_print
     ruby -e 'require "rubygems"' -e 'require "awesome_print"' -e'ap $LOAD_PATH'
-    gem install hexapdf
-    hexapdf version
+    gem install hexapdf --bindir=. --env-shebang
+    ./hexapdf version
 
 provides:
   - bin/bundle

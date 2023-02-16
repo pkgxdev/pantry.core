@@ -64,10 +64,11 @@ test:
     tea.xyz/gx/make: '*'
   script: |
     ruby -e 'puts "Hello World!"'
-    gem install hexapdf -v 0.28.0
-    hexapdf version
+    gem install hexapdf -v 0.28.0 --bindir=.
+    ./hexapdf version
     test -d "{{tea.prefix}}"/ruby-lang.org/gems/{{version.major}}.{{version.minor}}.0/gems/hexapdf-0.28.0
-    gem install bundle
+    gem install bundle --user-install --bindir=.
+    test -d "$HOME"/.gem/{{version.major}}.{{version.minor}}.0/hexapdf-0.28.0
 
 provides:
   - bin/erb
