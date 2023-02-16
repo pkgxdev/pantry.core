@@ -1,0 +1,105 @@
+diff --git a/lib/rubygems.rb b/lib/rubygems.rb
+index e42aca8..69b0224 100644
+--- a/lib/rubygems.rb
++++ b/lib/rubygems.rb
+@@ -298,8 +298,8 @@ module Gem
+   # The path where gem executables are to be installed.
+
+   def self.bindir(install_dir=Gem.dir)
+-    return File.join install_dir, "bin" unless
+-      install_dir.to_s == Gem.default_dir.to_s
++    # return File.join install_dir, "bin" unless
++    #   install_dir.to_s == Gem.default_dir.to_s
+     Gem.default_bindir
+   end
+
+diff --git a/lib/rubygems/config_file.rb b/lib/rubygems/config_file.rb
+index 4aa8b4d..8354c08 100644
+--- a/lib/rubygems/config_file.rb
++++ b/lib/rubygems/config_file.rb
+@@ -62,12 +62,7 @@ class Gem::ConfigFile
+   # :stopdoc:
+
+   SYSTEM_CONFIG_PATH =
+-    begin
+-      require "etc"
+-      Etc.sysconfdir
+-    rescue LoadError, NoMethodError
+-      RbConfig::CONFIG["sysconfdir"] || "/etc"
+-    end
++    RbConfig::CONFIG["sysconfdir"] || "/etc"
+
+   # :startdoc:
+
+diff --git a/lib/rubygems/defaults.rb b/lib/rubygems/defaults.rb
+index 8daff0b..bbe0c33 100644
+--- a/lib/rubygems/defaults.rb
++++ b/lib/rubygems/defaults.rb
+@@ -20,10 +20,10 @@ module Gem
+   # specified in the environment
+
+   def self.default_spec_cache_dir
+-    default_spec_cache_dir = File.join Gem.user_home, ".gem", "specs"
++    default_spec_cache_dir = File.join Gem.data_home, "gem", "specs"
+
+     unless File.exist?(default_spec_cache_dir)
+-      default_spec_cache_dir = File.join Gem.data_home, "gem", "specs"
++      default_spec_cache_dir = File.join Gem.user_home, ".gem", "specs"
+     end
+
+     default_spec_cache_dir
+@@ -34,7 +34,7 @@ module Gem
+   # specified in the environment
+
+   def self.default_dir
+-    @default_dir ||= File.join(RbConfig::CONFIG["rubylibprefix"], "gems", RbConfig::CONFIG["ruby_version"])
++    @default_dir ||= File.expand_path(File.join(__FILE__, "../../../../../ruby-lang.org/gems", RbConfig::CONFIG["ruby_version"]))
+   end
+
+   ##
+@@ -100,8 +100,8 @@ module Gem
+   # Path for gems in the user's home directory
+
+   def self.user_dir
+-    gem_dir = File.join(Gem.user_home, ".gem")
+-    gem_dir = File.join(Gem.data_home, "gem") unless File.exist?(gem_dir)
++    gem_dir = File.join(Gem.data_home, "gem")
++    gem_dir = File.join(Gem.user_home, ".gem") unless File.exist?(gem_dir)
+     parts = [gem_dir, ruby_engine]
+     parts << RbConfig::CONFIG["ruby_version"] unless RbConfig::CONFIG["ruby_version"].empty?
+     File.join parts
+@@ -197,7 +197,7 @@ module Gem
+   # The default directory for binaries
+
+   def self.default_bindir
+-    RbConfig::CONFIG["bindir"]
++    "/usr/local/bin"
+   end
+
+   def self.ruby_engine
+@@ -208,10 +208,10 @@ module Gem
+   # The default signing key path
+
+   def self.default_key_path
+-    default_key_path = File.join Gem.user_home, ".gem", "gem-private_key.pem"
++    default_key_path = File.join Gem.data_home, "gem", "gem-private_key.pem"
+
+     unless File.exist?(default_key_path)
+-      default_key_path = File.join Gem.data_home, "gem", "gem-private_key.pem"
++      default_key_path = File.join Gem.user_home, ".gem", "gem-private_key.pem"
+     end
+
+     default_key_path
+@@ -221,10 +221,10 @@ module Gem
+   # The default signing certificate chain path
+
+   def self.default_cert_path
+-    default_cert_path = File.join Gem.user_home, ".gem", "gem-public_cert.pem"
++    default_cert_path = File.join Gem.data_home, "gem", "gem-public_cert.pem"
+
+     unless File.exist?(default_cert_path)
+-      default_cert_path = File.join Gem.data_home, "gem", "gem-public_cert.pem"
++      default_cert_path = File.join Gem.user_home, ".gem", "gem-public_cert.pem"
+     end
+
+     default_cert_path

@@ -9,8 +9,18 @@ dependencies:
   ruby-lang.org: '>=2.3'
 
 build:
+  dependencies:
+    gnu.org/patch: '*'
   script: |
-    ruby setup.rb --prefix={{prefix}} --env-shebang
+    ruby setup.rb --prefix={{prefix}} --env-shebang --no-ri --no-rdoc
+    cd "{{prefix}}"
+    patch -p1 < "$SRCROOT"/props/defaults.rb.diff
+
+runtime:
+  env:
+    # HACK that is only required for this ruby package
+    # since we cannot use `gem` to build `gem` itself
+    RUBYLIB: ${{prefix}}/lib
 
 test:
   dependencies:
