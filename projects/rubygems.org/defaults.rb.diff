@@ -109,8 +109,8 @@ index 8daff0b..9071c3d 100644
    def self.operating_system_defaults
 -    {}
 +    {
-+      'install' => '--no-rdoc --no-ri --env-shebang',
-+      'update' => '--no-rdoc --no-ri --env-shebang'
++      install: '--no-rdoc --no-ri --env-shebang',
++      update: '--no-rdoc --no-ri --env-shebang'
 +    }
    end
 
