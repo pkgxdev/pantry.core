@@ -1,18 +1,24 @@
 diff --git a/lib/rubygems.rb b/lib/rubygems.rb
-index e42aca8..69b0224 100644
+index e42aca8..84128e1 100644
 --- a/lib/rubygems.rb
 +++ b/lib/rubygems.rb
-@@ -298,8 +298,8 @@ def self.binary_mode
+@@ -297,10 +297,12 @@ def self.binary_mode
+   ##
    # The path where gem executables are to be installed.
 
-   def self.bindir(install_dir=Gem.dir)
+-  def self.bindir(install_dir=Gem.dir)
 -    return File.join install_dir, "bin" unless
 -      install_dir.to_s == Gem.default_dir.to_s
-+    # return File.join install_dir, "bin" unless
-+    #   install_dir.to_s == Gem.default_dir.to_s
-     Gem.default_bindir
+-    Gem.default_bindir
++  def self.bindir(install_dir=nil)
++    if install_dir
++      File.join install_dir, "bin"
++    else
++      Gem.default_bindir
++    end
    end
 
+   ##
 diff --git a/lib/rubygems/config_file.rb b/lib/rubygems/config_file.rb
 index 4aa8b4d..8354c08 100644
 --- a/lib/rubygems/config_file.rb
@@ -32,7 +38,7 @@ index 4aa8b4d..8354c08 100644
    # :startdoc:
 
 diff --git a/lib/rubygems/defaults.rb b/lib/rubygems/defaults.rb
-index 8daff0b..0c7a750 100644
+index 8daff0b..1fab83c 100644
 --- a/lib/rubygems/defaults.rb
 +++ b/lib/rubygems/defaults.rb
 @@ -20,13 +20,7 @@ def self.default_sources
@@ -69,7 +75,30 @@ index 8daff0b..0c7a750 100644
      parts = [gem_dir, ruby_engine]
      parts << RbConfig::CONFIG["ruby_version"] unless RbConfig::CONFIG["ruby_version"].empty?
      File.join parts
-@@ -137,7 +130,7 @@ def self.config_file
+@@ -111,18 +104,17 @@ def self.user_dir
+   # The path to standard location of the user's configuration directory.
+
+   def self.config_home
+-    @config_home ||= (ENV["XDG_CONFIG_HOME"] || File.join(Gem.user_home, ".config"))
++    @config_home ||= (ENV["XDG_CONFIG_HOME"] || File.join(Gem.user_home, ".gem"))
+   end
+
+   ##
+   # Finds the user's config file
+
+   def self.find_config_file
+-    gemrc = File.join Gem.user_home, ".gemrc"
+-    if File.exist? gemrc
+-      gemrc
++    @gemrc = if ENV["XDG_CONFIG_HOME"]
++      File.join ENV["XDG_CONFIG_HOME"], "gemrc"
+     else
+-      File.join Gem.config_home, "gem", "gemrc"
++      File.join Gem.user_home, ".gemrc"
+     end
+   end
+
+@@ -137,7 +129,7 @@ def self.config_file
    # The path to standard location of the user's state file.
 
    def self.state_file
@@ -78,7 +107,7 @@ index 8daff0b..0c7a750 100644
    end
 
    ##
-@@ -151,14 +144,18 @@ def self.cache_home
+@@ -151,14 +143,18 @@ def self.cache_home
    # The path to standard location of the user's data directory.
 
    def self.data_home
@@ -99,7 +128,16 @@ index 8daff0b..0c7a750 100644
    end
 
    ##
-@@ -208,26 +205,14 @@ def self.ruby_engine
+@@ -197,7 +193,7 @@ def self.default_exec_format
+   # The default directory for binaries
+
+   def self.default_bindir
+-    RbConfig::CONFIG["bindir"]
++    "/usr/local/bin"
+   end
+
+   def self.ruby_engine
+@@ -208,26 +204,14 @@ def self.ruby_engine
    # The default signing key path
 
    def self.default_key_path
@@ -128,14 +166,14 @@ index 8daff0b..0c7a750 100644
    end
 
    ##
-@@ -267,7 +252,10 @@ def self.vendor_dir # :nodoc:
+@@ -267,7 +251,10 @@ def self.vendor_dir # :nodoc:
    # end
 
    def self.operating_system_defaults
 -    {}
 +    {
-+      'install' => '--no-rdoc --no-ri --env-shebang',
-+      'update' => '--no-rdoc --no-ri --env-shebang'
++      'install' => '--no-rdoc --no-ri --env-shebang --user-install',
++      'update' => '--no-rdoc --no-ri --env-shebang --user-install'
 +    }
    end
 
