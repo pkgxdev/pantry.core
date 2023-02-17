@@ -14,7 +14,7 @@ build:
   script: |
     ruby setup.rb --prefix={{prefix}} --env-shebang --no-ri --no-rdoc
     cd "{{prefix}}"
-    patch -p1 < "$SRCROOT"/props/defaults.rb.diff
+    patch -p1 < "$SRCROOT"/props/fit-n-finish.patch
 
 runtime:
   env:
