@@ -31,7 +31,7 @@ test:
   script: |
     gem install awesome_print
     ruby -e 'require "rubygems"' -e 'require "awesome_print"' -e'ap $LOAD_PATH'
-    #TODO test -d ~/.gem/{{deps.ruby.version.major}}.{{deps.ruby.version.minor}}.0/gems/hexapdf-0.28.0
+    #TODO test -d ~/.gem/ruby/{{deps.ruby.version.major}}.{{deps.ruby.version.minor}}.0/gems/hexapdf-0.28.0
     gem install hexapdf
     ~/.local/bin/hexapdf version
 

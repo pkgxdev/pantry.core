@@ -68,8 +68,8 @@ test:
     ./hexapdf version
     test -d "{{tea.prefix}}"/ruby-lang.org/gems/{{version.major}}.{{version.minor}}.0/gems/hexapdf-0.28.0
     gem install bundle
-    test -d ~/.gem/{{version.major}}.{{version.minor}}.0/hexapdf-0.28.0
-    test -f ~/.local/bun/bundle
+    test -d ~/.gem/ruby/{{version.major}}.{{version.minor}}.0/gems/bundle-0.0.1
+    test -f ~/.local/bin/bundle
 
 provides:
   - bin/erb
