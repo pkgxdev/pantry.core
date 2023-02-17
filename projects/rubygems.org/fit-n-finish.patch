@@ -178,3 +178,26 @@ index 8daff0b..1fab83c 100644
    end
 
    ##
+
+diff --git a/lib/rubygems/installer.rb b/lib/rubygems/installer.rb
+index 9fbb282..8fa8bd9 100644
+--- a/lib/rubygems/installer.rb
++++ b/lib/rubygems/installer.rb
+@@ -190,7 +190,7 @@ def initialize(package, options={})
+
+     if options[:user_install]
+       @gem_home = Gem.user_dir
+-      @bin_dir = Gem.bindir gem_home unless options[:bin_dir]
++      @bin_dir = File.join(Gem.user_home, ".local/bin") unless options[:bin_dir]
+       @plugins_dir = Gem.plugindir(gem_home)
+       check_that_user_bin_dir_is_in_path
+     end
+@@ -953,7 +953,7 @@ def write_cache_file
+
+   def ensure_writable_dir(dir) # :nodoc:
+     begin
+-      Dir.mkdir dir, *[options[:dir_mode] && 0755].compact
++      FileUtils.mkdir_p dir, *[options[:dir_mode] && 0755].compact
+     rescue SystemCallError
+       raise unless File.directory? dir
+     end
