@@ -11,13 +11,14 @@ jobs:
       HAS_ARTIFACTS: ${{ env.HAS_ARTIFACTS }}
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/cache@v3
+      - uses: actions/checkout@v3
         with:
-          path: |
-            ~/.deno
-            ~/.cache/deno
-          key: ${{ runner.os }}-deno-cd-${{ hashFiles('deno.jsonc')}}
-      - uses: teaxyz/setup@v0
+          path: pantry
+          repository: teaxyz/pantry.core
+      - uses: ./pantry/.github/actions/cache-brewkit
+        with:
+          cache-prefix: cd
+
       - run: scripts/map-projects-to-githubs.ts
         env:
           WATCHER_URL: ${{ secrets.WATCHER_URL }}
