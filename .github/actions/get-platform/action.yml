@@ -1,0 +1,37 @@
+name: Cache Brewkit
+description: sets up tea.xyz/brewkit with caching
+
+inputs:
+  platform:
+    description: >
+      The platform+arch to get specs for
+    required: true
+outputs:
+  os:
+    description: the OS for general tasks
+    value: ${{ steps.platform.outputs.os }}
+  build-os:
+    description: the OS for build tasks
+    value: ${{ steps.platform.outputs.build-os }}
+  container:
+    description: the container for build tasks
+    value: ${{ steps.platform.outputs.container }}
+  test-matrix:
+    description: the matrix of os/containers for test tasks
+    value: ${{ steps.platform.outputs.test-matrix }}
+
+runs:
+  using: composite
+  steps:
+    - uses: actions/checkout@v3
+      with:
+        repository: teaxyz/pantry.core
+        path: pantry.core
+    - uses: ./pantry.core/.github/actions/cache-brewkit
+      with:
+        cache-prefix: get-platform
+    - run: pantry.core/scripts/get-platform.ts
+      shell: sh
+      id: platform
+      env:
+        PLATFORM: ${{ inputs.platform }}

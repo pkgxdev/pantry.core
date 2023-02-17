@@ -12,13 +12,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/cache@v3
+      - uses: ./.github/actions/cache-brewkit
         with:
-          path: |
-            ~/.deno
-            ~/.cache/deno
-          key: ${{ runner.os }}-deno-queue-detail-ingestion-${{ hashFiles('deno.jsonc')}}
-      - uses: teaxyz/setup@v0
+          cache-prefix: queue-detail-ingestion
       - run: ./scripts/index-packages.ts ${{ inputs.projects }}
         env:
           TEA_PANTRY_PATH: ${{ github.workspace }}
