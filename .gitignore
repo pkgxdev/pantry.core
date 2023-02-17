@@ -3,3 +3,5 @@
 
 #TODO commit after v1
 /deno.lock
+
+.DS_Store
