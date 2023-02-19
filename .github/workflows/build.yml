@@ -24,7 +24,7 @@ jobs:
       test-matrix: ${{ steps.platform.outputs.test-matrix }}
       cache-set: ${{ steps.platform.outputs.cache-set }}
     steps:
-      - uses: teaxyz/pantry.core/.github/actions/get-platform@main
+      - uses: teaxyz/pantry.core/.github/actions/get-platform@cache-brewkit
         id: platform
         with:
           platform: ${{ inputs.platform }}
@@ -35,7 +35,7 @@ jobs:
     needs: [get-platform]
     steps:
       - uses: actions/checkout@v3
-      - uses: teaxyz/pantry.core/.github/actions/setup-brewkit@main
+      - uses: teaxyz/pantry.core/.github/actions/setup-brewkit@cache-brewkit
         id: tea
         with:
           cache-prefix: build
@@ -94,7 +94,7 @@ jobs:
     container: ${{ matrix.platform.container }}
     steps:
       - uses: actions/checkout@v3
-      - uses: teaxyz/pantry.core/.github/actions/setup-brewkit@main
+      - uses: teaxyz/pantry.core/.github/actions/setup-brewkit@cache-brewkit
         with:
           cache-prefix: test
 
@@ -142,7 +142,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - uses: teaxyz/pantry.core/.github/actions/setup-brewkit@main
+      - uses: teaxyz/pantry.core/.github/actions/setup-brewkit@cache-brewkit
         with:
           cache-prefix: stage
 
