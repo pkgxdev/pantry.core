@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: ./.github/actions/cache-brewkit
+      - uses: teaxyz/pantry.core/.github/actions/cache-brewkit
         with:
           cache-prefix: queue-detail-ingestion
       - run: ./scripts/index-packages.ts ${{ inputs.projects }}
