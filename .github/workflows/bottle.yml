@@ -35,11 +35,10 @@ jobs:
       built: ${{ env.built }}
       pr: ${{ env.PR }}
     steps:
-      - uses: teaxyz/pantry.core/.github/actions/setup-brewkit@cache-brewkit
+      - uses: teaxyz/pantry.core/.github/actions/setup@cache-brewkit
         id: tea
         with:
           cache-prefix: bottle
-          srcroot: null
           prefix: ${{ github.workspace }}
 
       - name: configure scripts PATH
@@ -119,11 +118,10 @@ jobs:
     needs: [bottle]
     runs-on: ubuntu-latest
     steps:
-      - uses: teaxyz/pantry.core/.github/actions/setup-brewkit@cache-brewkit
+      - uses: teaxyz/pantry.core/.github/actions/setup@cache-brewkit
         id: tea
         with:
           cache-prefix: upload
-          srcroot: null
           prefix: ${{ github.workspace }}
 
       - name: configure scripts PATH

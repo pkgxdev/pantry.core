@@ -1,5 +1,6 @@
-name: Apple signing
-description: signs binaries for macOS
+name: Apple Codesigning
+description: Codesigns macOS binaries
+
 inputs:
   p12-file-base64:
     description: Base64 encoded p12 file

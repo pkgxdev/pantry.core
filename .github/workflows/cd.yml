@@ -11,10 +11,10 @@ jobs:
       HAS_ARTIFACTS: ${{ env.HAS_ARTIFACTS }}
     steps:
       - uses: actions/checkout@v3
-
-      - uses: teaxyz/pantry.core/.github/actions/setup-brewkit@cache-brewkit
         with:
-          cache-prefix: cd
+          repo: teaxyz/pantry.core
+
+      - uses: teaxyz/pantry.core/.github/actions/setup@cache-brewkit
 
       - run: scripts/map-projects-to-githubs.ts
         env:

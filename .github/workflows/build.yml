@@ -35,21 +35,15 @@ jobs:
     needs: [get-platform]
     steps:
       - uses: actions/checkout@v3
-      - uses: teaxyz/pantry.core/.github/actions/setup-brewkit@cache-brewkit
+
+      - uses: teaxyz/pantry.core/.github/actions/setup@cache-brewkit
         id: tea
         with:
-          cache-prefix: build
-          srcroot: null
           prefix: /opt
 
       - name: sanitize macOS runners
         if: matrix.platform.os == 'macos-11'
         run: sudo mv /usr/local/bin/* /tmp/
-
-      - name: configure tea env
-        run: |
-          echo "$PWD/scripts:$TEA_PREFIX/tea.xyz/var/pantry/scripts" >> $GITHUB_PATH
-          echo "TEA_PANTRY_PATH=$GITHUB_WORKSPACE" >> $GITHUB_ENV
 
       - run: pkg build ${{ inputs.projects }}
         id: build
@@ -94,9 +88,7 @@ jobs:
     container: ${{ matrix.platform.container }}
     steps:
       - uses: actions/checkout@v3
-      - uses: teaxyz/pantry.core/.github/actions/setup-brewkit@cache-brewkit
-        with:
-          cache-prefix: test
+      - uses: teaxyz/pantry.core/.github/actions/setup@cache-brewkit
 
       - uses: actions/download-artifact@v3
         with:
@@ -107,10 +99,9 @@ jobs:
 
       - run: pkg test ${{ inputs.projects }}
         env:
-          TEA_PANTRY_PATH: ${{ github.workspace }}
           GITHUB_TOKEN: ${{github.token}}
 
-      - name: post
+      - name: '[post]'
         run:
           echo "HAS_SECRETS=$HAS_SECRETS" >>$GITHUB_ENV
         env:
@@ -141,19 +132,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-
-      - uses: teaxyz/pantry.core/.github/actions/setup-brewkit@cache-brewkit
         with:
-          cache-prefix: stage
+          repo: teaxyz/pantry.core
 
-      - name: configure scripts PATH
-        run: echo "$PWD/scripts:$TEA_PREFIX/tea.xyz/var/pantry/scripts" >> $GITHUB_PATH
+      - uses: teaxyz/pantry.core/.github/actions/setup@cache-brewkit
 
       - uses: actions/download-artifact@v3
         with:
           name: ${{ inputs.platform }}
 
-      - run: cache-artifacts.ts
+      - run: scripts/cache-artifacts.ts
           ${{github.repository}}
           ${{github.ref}}
           ${{inputs.platform}}
