@@ -11,8 +11,8 @@ inputs:
   identity:
     description: Identity to use for signing
     required: true
-  paths:
-    description: Paths to search for libs/bins sign
+  files:
+    description: files to sign
     required: true
 
 runs:
@@ -38,29 +38,13 @@ runs:
         p12-file-base64: ${{ inputs.p12-file-base64 }}
         p12-password: ${{ inputs.p12-password }}
 
-    # Codesign libs and bins
-    - name: Find libs and bins
-      id: find
-      shell: bash
-      run: |
-        for PATH in $PATHS; do
-          LIBS="$(/usr/bin/find $PATH -name '*.so' -or -name '*.dylib' -or -name '*.bundle')"
-          if test -d $PATH/bin; then
-            BINS="$(/usr/bin/find $PATH/bin -type f)"
-          fi
-        done
-
-        echo -e "files<<EOF\n$LIBS\n$BINS\nEOF" >> $GITHUB_OUTPUT
-      env:
-        PATHS: ${{ inputs.paths }}
-
     - name: Codesign files
       shell: bash
       run: |
         echo "$FILES" | /usr/bin/xargs /usr/bin/codesign -s "$IDENTITY" --force -v --deep \
           --timestamp --preserve-metadata=entitlements -o runtime || true
       env:
-        FILES: ${{ steps.find.outputs.files }}
+        FILES: ${{ inputs.files }}
         IDENTITY: ${{ inputs.identity }}
 
     # This isn't very informative, but even a no-op is safer than none
@@ -77,7 +61,7 @@ runs:
           /usr/bin/codesign -vvv --deep --strict "$FILE"
         done
       env:
-        FILES: ${{ steps.find.outputs.files }}
+        FILES: ${{ inputs.files }}
 
     # Needed for self-hosted runner, since it doesn't destroy itself automatically.
     - name: Delete keychain
