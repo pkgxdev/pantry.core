@@ -26,7 +26,7 @@ runs:
     - uses: teaxyz/pantry.core/.github/actions/setup-brewkit@cache-brewkit
       with:
         cache-prefix: get-platform
-    - run: ./scripts/get-platform.ts
+    - run: ${{github.action_path}}/../../scripts/get-platform.ts
       shell: sh
       id: platform
       env:
