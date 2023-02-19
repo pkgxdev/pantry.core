@@ -1,5 +1,5 @@
-name: Cache Brewkit
-description: sets up tea.xyz/brewkit with caching
+name: Get Platform
+description: Dunno, ask Jacob
 
 inputs:
   platform:
@@ -23,9 +23,8 @@ outputs:
 runs:
   using: composite
   steps:
-    - uses: teaxyz/pantry.core/.github/actions/setup-brewkit@cache-brewkit
-      with:
-        cache-prefix: get-platform
+    - uses: teaxyz/pantry.core/.github/actions/setup@cache-brewkit
+
     - run: ${{github.action_path}}/../../../scripts/get-platform.ts
       shell: sh
       id: platform
