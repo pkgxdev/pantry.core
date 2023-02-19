@@ -24,11 +24,13 @@ outputs:
 runs:
   using: composite
   steps:
-    - uses: teaxyz/pantry.core/.github/actions/cache@cache-brewkit
-
     - uses: teaxyz/setup@v0
       with:
         srcroot: null
+
+    - uses: teaxyz/pantry.core/.github/actions/cache@cache-brewkit
+      with:
+        cache-hash: get-platform-${{ hashFiles(format('{0}/get-platform.ts', github.action_path), 'deno.jsonc') }}
 
     - run: ${{github.action_path}}/get-platform.ts
       shell: sh

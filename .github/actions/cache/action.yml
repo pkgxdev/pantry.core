@@ -1,4 +1,10 @@
 name: tea.xyz/pantry/actions/cache
+description: cache deno deps
+
+inputs:
+  cache-hash:
+    description: hash of the cache to use
+    required: true
 
 runs:
   using: composite
@@ -17,4 +23,4 @@ runs:
         path: |
           ~/.deno
           ${{ steps.os-cache.outputs.cache }}
-        key: ${{ runner.os }}-deno-${{ hashFiles(format('{0}/tea.xyz/brewkit/v\*/deno.jsonc', steps.tea.outputs.prefix)) }}
+        key: ${{ runner.os }}-deno-${{ inputs.cache-hash}}
