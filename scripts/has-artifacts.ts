@@ -13,7 +13,7 @@ args:
 
 import { S3 } from "s3";
 import { panic } from "utils";
-import { find_pr } from "./fetch-pr-artifacts.ts";
+import { find_pr } from "../.github/actions/fetch-pr-artifacts/fetch-pr-artifacts.ts";
 
 /// Main
 /// -------------------------------------------------------------------------------

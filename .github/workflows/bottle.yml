@@ -57,13 +57,29 @@ jobs:
             echo "$file=$(cat $file)" >>$GITHUB_ENV
           done
 
+      # Codesign libs and bins
+      - name: Find libs and bins
+        id: find
+        shell: sh
+        run: |
+          for PATH in $PATHS; do
+            LIBS="$(find $PATH -name '*.so' -or -name '*.dylib' -or -name '*.bundle')"
+            if test -d $PATH/bin; then
+              BINS="$(find $PATH/bin -type f)"
+            fi
+          done
+
+          echo -e "files<<EOF\n$LIBS\n$BINS\nEOF" >> $GITHUB_OUTPUT
+        env:
+          PATHS: ${{ env.relative-paths }}
+
       - uses: teaxyz/pantry.core/.github/actions/codesign@cache-brewkit
         if: startsWith(inputs.platform, 'darwin+')
         with:
             p12-file-base64: ${{ secrets.APPLE_CERTIFICATE_P12 }}
             p12-password: ${{ secrets.APPLE_CERTIFICATE_P12_PASSWORD }}
             identity: "Developer ID Application: Tea Inc. (7WV56FL599)"
-            paths: ${{ env.relative-paths}}
+            files: ${{ steps.outputs.find.files }}
 
       - run: |
           tea +gnupg.org gpg-agent --daemon || true
