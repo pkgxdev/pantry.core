@@ -3,20 +3,20 @@ description: internal tea.xyz specific at this time
 
 inputs:
   platform:
-    description: ''
+    description: platform+arch to fetch
     required: true
   token:
-    description: ''
+    description: github token
     default: ${{ github.token }}
     required: true
   AWS_S3_BUCKET:
-    description: ''
+    description: AWS S3 bucket to use for cache
     required: true
   AWS_ACCESS_KEY_ID:
-    description: ''
+    description: AWS access key id
     required: true
   AWS_SECRET_ACCESS_KEY:
-    description: ''
+    description: AWS secret access key
     required: true
 
 runs:

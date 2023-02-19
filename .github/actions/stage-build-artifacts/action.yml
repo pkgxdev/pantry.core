@@ -18,17 +18,20 @@ inputs:
 runs:
   using: composite
   steps:
-    - uses: teaxyz/pantry.core/.github/actions/cache@cache-brewkit
-
     - uses: actions/download-artifact@v3
       with:
         name: ${{ inputs.platform }}
+
+    - uses: teaxyz/pantry.core/.github/actions/cache@cache-brewkit
+      with:
+        cache-hash: get-platform-${{ hashFiles(format('{0}/cache-artifacts.ts', github.action_path), 'deno.jsonc') }}
 
     - run: scripts/cache-artifacts.ts
         ${{github.repository}}
         ${{github.ref}}
         ${{inputs.platform}}
         artifacts.tgz
+      shell: sh
       env:
         AWS_S3_CACHE: ${{ inputs.AWS_S3_CACHE }}
         AWS_ACCESS_KEY_ID: ${{ inputs.AWS_ACCESS_KEY_ID }}
