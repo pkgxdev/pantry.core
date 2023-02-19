@@ -22,10 +22,7 @@ jobs:
       os: ${{ steps.platform.outputs.os }}
       cache-set: ${{ steps.platform.outputs.cache-set }}
     steps:
-      - uses: actions/checkout@v3
-        with:
-          repository: teaxyz/pantry.core
-      - uses: ./.github/actions/get-platform
+      - uses: teaxyz/pantry.core/.github/actions/get-platform@main
         id: platform
         with:
           platform: ${{ inputs.platform }}
@@ -38,11 +35,7 @@ jobs:
       built: ${{ env.built }}
       pr: ${{ env.PR }}
     steps:
-      - uses: actions/checkout@v3
-        with:
-          path: pantry
-          repository: teaxyz/pantry.core
-      - uses: ./pantry/.github/actions/cache-brewkit
+      - uses: teaxyz/pantry.core/.github/actions/setup-brewkit@main
         id: tea
         with:
           cache-prefix: bottle
@@ -72,12 +65,7 @@ jobs:
             echo "$file=$(cat $file)" >>$GITHUB_ENV
           done
 
-      - uses: actions/checkout@v3
-        if: startsWith(inputs.platform, 'darwin+')
-        with:
-          path: pantry
-          repository: teaxyz/pantry.core
-      - uses: ./pantry/.github/actions/apple-signing
+      - uses: teaxyz/pantry.core/.github/actions/apple-signing@main
         if: startsWith(inputs.platform, 'darwin+')
         with:
             p12-file-base64: ${{ secrets.APPLE_CERTIFICATE_P12 }}
@@ -131,11 +119,7 @@ jobs:
     needs: [bottle]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-        with:
-          path: pantry
-          repository: teaxyz/pantry.core
-      - uses: ./pantry/.github/actions/cache-brewkit
+      - uses: teaxyz/pantry.core/.github/actions/setup-brewkit@main
         id: tea
         with:
           cache-prefix: upload

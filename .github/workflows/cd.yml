@@ -5,17 +5,14 @@ on:
    branches: [main]
 
 jobs:
-  cd:  # job is named poorly, all I can tell you about it is: it’s *not* CD
+  ask-jacob-what-this-should-be-called:
     runs-on: ubuntu-latest
     outputs:
       HAS_ARTIFACTS: ${{ env.HAS_ARTIFACTS }}
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/checkout@v3
-        with:
-          path: pantry
-          repository: teaxyz/pantry.core
-      - uses: ./pantry/.github/actions/cache-brewkit
+
+      - uses: teaxyz/pantry.core/.github/actions/setup-brewkit@main
         with:
           cache-prefix: cd
 
@@ -23,6 +20,7 @@ jobs:
         env:
           WATCHER_URL: ${{ secrets.WATCHER_URL }}
           TEA_API_TOKEN: ${{ secrets.TEA_API_TOKEN }}
+
       - run: scripts/has-artifacts.ts ${{ github.repository }} ${{ github.sha }} >>$GITHUB_ENV
         env:
           GITHUB_TOKEN: ${{github.token}}
