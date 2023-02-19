@@ -10,7 +10,7 @@ runs:
   using: composite
   steps:
     - run: |
-        if [[ "$RUNNER_OS" == "macOS" ]]; then
+        if test "$RUNNER_OS" = "macOS"; then
           echo "cache=~/Library/Caches/deno" >> $GITHUB_OUTPUT
         else
           echo "cache=~/.cache/deno" >> $GITHUB_OUTPUT
