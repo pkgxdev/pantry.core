@@ -26,7 +26,7 @@ runs:
       with:
         cache-hash: get-platform-${{ hashFiles('.github/actions/stage-build-artifacts/cache-artifacts.ts', './deno.jsonc') }}
 
-    - run: ${{ github.action_path }}/cache-artifacts.ts
+    - run: scripts/cache-artifacts.ts
         ${{github.repository}}
         ${{github.ref}}
         ${{inputs.platform}}
