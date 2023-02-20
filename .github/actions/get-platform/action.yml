@@ -23,10 +23,14 @@ outputs:
 runs:
   using: composite
   steps:
-    - uses: ${{github.action_path}}/.github/actions/setup-brewkit
+    - uses: actions/checkout@v3
+      with:
+        repository: teaxyz/pantry.core
+        path: pantry.core
+    - uses: ./pantry.core/.github/actions/cache-brewkit
       with:
         cache-prefix: get-platform
-    - run: ${{github.action_path}}/scripts/get-platform.ts
+    - run: pantry.core/scripts/get-platform.ts
       shell: sh
       id: platform
       env:
