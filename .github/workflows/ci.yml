@@ -20,7 +20,7 @@ jobs:
             RESULT="$RESULT $y"
           done
           echo "diff=$RESULT" >> $GITHUB_OUTPUT
-  dispatch-build:
+  build:
     strategy:
       fail-fast: false
       matrix:

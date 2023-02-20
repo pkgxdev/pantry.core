@@ -1,12 +1,11 @@
-name: tea/pantry/get-platform
-description: Outputs the platform spec we need for builds
+name: Get Platform
+description: Dunno, ask Jacob
 
 inputs:
   platform:
     description: >
       The platform+arch to get specs for
     required: true
-
 outputs:
   os:
     description: the OS for general tasks
@@ -24,13 +23,9 @@ outputs:
 runs:
   using: composite
   steps:
-    - uses: teaxyz/pantry.core/.github/actions/cache@cache-brewkit
+    - uses: teaxyz/pantry.core/.github/actions/setup@cache-brewkit
 
-    - uses: teaxyz/setup@v0
-      with:
-        srcroot: null
-
-    - run: ${{github.action_path}}/get-platform.ts
+    - run: ${{github.action_path}}/../../../scripts/get-platform.ts
       shell: sh
       id: platform
       env:

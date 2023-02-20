@@ -20,7 +20,14 @@ outputs:
 runs:
   using: composite
   steps:
-    - run: teaxyz/pantry.core/.github/actions/cache@cache-brewkit
+    - run: |
+        if [[ "$RUNNER_OS" == "macOS" ]]; then
+          echo "cache=~/Library/Caches/deno" >> $GITHUB_OUTPUT
+        else
+          echo "cache=~/.cache/deno" >> $GITHUB_OUTPUT
+        fi
+      id: os-cache
+      shell: sh
 
     - uses: teaxyz/setup@v0
       id: tea

@@ -80,6 +80,7 @@ jobs:
     needs: [get-platform, build]
     runs-on: ${{ matrix.platform.os }}
     strategy:
+      fail-fast: false
       matrix:
         platform: ${{ fromJson(needs.get-platform.outputs.test-matrix) }}
     outputs:
@@ -98,7 +99,7 @@ jobs:
 
       - run: pkg test ${{ inputs.projects }}
         env:
-          GITHUB_TOKEN: ${{ github.token }}
+          GITHUB_TOKEN: ${{github.token}}
 
       - name: '[post]'
         run:
@@ -130,13 +131,22 @@ jobs:
     if: startsWith(github.ref, 'refs/pull/') && startsWith(github.repository, 'teaxyz/pantry.') && needs.test.outputs.HAS_SECRETS == 'true'
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v3
+        with:
+          repo: teaxyz/pantry.core
+
+      - uses: teaxyz/pantry.core/.github/actions/setup@cache-brewkit
+
       - uses: actions/download-artifact@v3
         with:
           name: ${{ inputs.platform }}
 
-      - uses: teaxyz/pantry.core/.github/actions/stage-build-artifacts@cache-brewkit
-        with:
-          platform: ${{ inputs.platform }}
+      - run: scripts/cache-artifacts.ts
+          ${{github.repository}}
+          ${{github.ref}}
+          ${{inputs.platform}}
+          artifacts.tgz
+        env:
           AWS_S3_CACHE: ${{ secrets.AWS_S3_CACHE }}
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
