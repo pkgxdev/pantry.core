@@ -19,7 +19,7 @@ runs:
   using: composite
   steps:
     - run: ${{ github.action_path }}/bottle.ts ${{ inputs.built }}
-      shell: sh
+      id: bottle-xz
       env:
         COMPRESSION: ${{ inputs.compression }}
         GPG_KEY_ID: ${{ inputs.gpg-key-id }}

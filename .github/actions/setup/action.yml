@@ -20,6 +20,8 @@ outputs:
 runs:
   using: composite
   steps:
+    - run: teaxyz/pantry.core/.github/actions/cache@cache-brewkit
+
     - uses: teaxyz/setup@v0
       id: tea
       with:
@@ -28,13 +30,15 @@ runs:
         # prevent pantry from reassigning TEA_PREFIX etc.
         srcroot: null
 
-    - uses: teaxyz/pantry.core/.github/actions/cache@cache-brewkit
-      with:
-        job-name: ${{ github.job }}
-        cache-hash: get-platform-${{ hashFiles(format('{0}/tea.xyz/brewkit/**', steps.tea.outputs.prefix)) }}
-
     - run: |
         if test -d "{{ github.workspace }}"/projects; then
           echo "TEA_PANTRY_PATH=${{ github.workspace }}" >> $GITHUB_ENV
         fi
       shell: sh
+
+    - uses: actions/cache@v3
+      with:
+        path: |
+          ~/.deno
+          ${{ steps.os-cache.outputs.cache }}
+        key: ${{ runner.os }}-deno-${{ hashFiles(format('{0}/tea.xyz/brewkit/v\*/deno.jsonc', steps.tea.outputs.prefix)) }}
