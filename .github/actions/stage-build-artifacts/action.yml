@@ -24,7 +24,7 @@ runs:
 
     - uses: teaxyz/pantry.core/.github/actions/cache@cache-brewkit
       with:
-        cache-hash: get-platform-${{ hashFiles('.github/actions/stage-build-artifacts/cache-artifacts.ts', './deno.jsonc') }}
+        cache-hash: get-platform-${{ hashFiles(format('{0}/cache-artifacts.ts', github.action_path), 'deno.jsonc') }}
 
     - run: scripts/cache-artifacts.ts
         ${{github.repository}}

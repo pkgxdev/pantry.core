@@ -30,7 +30,7 @@ runs:
 
     - uses: teaxyz/pantry.core/.github/actions/cache@cache-brewkit
       with:
-        cache-hash: get-platform-${{ hashFiles('.github/actions/get-platform/get-platform.ts', './deno.jsonc') }}
+        cache-hash: get-platform-${{ hashFiles(format('{0}/get-platform.ts', github.action_path), 'deno.jsonc') }}
 
     - run: ${{github.action_path}}/get-platform.ts
       shell: sh
