@@ -24,7 +24,10 @@ jobs:
       test-matrix: ${{ steps.platform.outputs.test-matrix }}
       cache-set: ${{ steps.platform.outputs.cache-set }}
     steps:
-      - uses: teaxyz/pantry.core/.github/actions/get-platform@main
+      - uses: actions/checkout@v3
+        with:
+          repository: teaxyz/pantry.core
+      - uses: ./.github/actions/get-platform
         id: platform
         with:
           platform: ${{ inputs.platform }}
@@ -35,7 +38,11 @@ jobs:
     needs: [get-platform]
     steps:
       - uses: actions/checkout@v3
-      - uses: teaxyz/pantry.core/.github/actions/setup-brewkit@main
+      - uses: actions/checkout@v3
+        with:
+          path: pantry
+          repository: teaxyz/pantry.core
+      - uses: ./pantry/.github/actions/cache-brewkit
         id: tea
         with:
           cache-prefix: build
@@ -51,7 +58,7 @@ jobs:
           echo "$PWD/scripts:$TEA_PREFIX/tea.xyz/var/pantry/scripts" >> $GITHUB_PATH
           echo "TEA_PANTRY_PATH=$GITHUB_WORKSPACE" >> $GITHUB_ENV
 
-      - run: pkg build ${{ inputs.projects }}
+      - run: tea +tea.xyz/brewkit build ${{ inputs.projects }}
         id: build
         env:
           GITHUB_TOKEN: ${{ github.token }}
@@ -94,7 +101,12 @@ jobs:
     container: ${{ matrix.platform.container }}
     steps:
       - uses: actions/checkout@v3
-      - uses: teaxyz/pantry.core/.github/actions/setup-brewkit@main
+      - uses: actions/checkout@v3
+        with:
+          path: pantry
+          repository: teaxyz/pantry.core
+
+      - uses: ./pantry/.github/actions/cache-brewkit
         with:
           cache-prefix: test
 
@@ -105,7 +117,7 @@ jobs:
       - name: extract bottles
         run: tar xzf artifacts.tgz -C $TEA_PREFIX
 
-      - run: pkg test ${{ inputs.projects }}
+      - run: tea +tea.xyz/brewkit test ${{ inputs.projects }}
         env:
           TEA_PANTRY_PATH: ${{ github.workspace }}
           GITHUB_TOKEN: ${{github.token}}
@@ -141,8 +153,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-
-      - uses: teaxyz/pantry.core/.github/actions/setup-brewkit@main
+      - uses: actions/checkout@v3
+        with:
+          path: pantry
+          repository: teaxyz/pantry.core
+      - uses: ./pantry/.github/actions/cache-brewkit
         with:
           cache-prefix: stage
 
