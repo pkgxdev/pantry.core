@@ -23,7 +23,7 @@ outputs:
 runs:
   using: composite
   steps:
-    - uses: teaxyz/pantry.core/.github/actions/setup-brewkit@cache-brewkit
+    - uses: ${{github.action_path}}/.github/actions/setup-brewkit
       with:
         cache-prefix: get-platform
     - run: ${{github.action_path}}/scripts/get-platform.ts
