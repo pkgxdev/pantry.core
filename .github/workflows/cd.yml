@@ -12,7 +12,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - uses: teaxyz/pantry.core/.github/actions/setup-brewkit@cache-brewkit
+      - uses: teaxyz/pantry.core/.github/actions/setup-brewkit@main
         with:
           cache-prefix: cd
 
