@@ -130,8 +130,6 @@ jobs:
     if: startsWith(github.ref, 'refs/pull/') && startsWith(github.repository, 'teaxyz/pantry.') && needs.test.outputs.HAS_SECRETS == 'true'
     runs-on: ubuntu-latest
     steps:
-      - uses: teaxyz/pantry.core/.github/actions/setup@cache-brewkit
-
       - uses: actions/download-artifact@v3
         with:
           name: ${{ inputs.platform }}
