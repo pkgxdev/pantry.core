@@ -30,6 +30,7 @@ runs:
 
     - uses: teaxyz/pantry.core/.github/actions/cache@cache-brewkit
       with:
+        job-name: ${{ github.job }}
         cache-hash: get-platform-${{ hashFiles(format('{0}/tea.xyz/brewkit/**', steps.tea.outputs.prefix)) }}
 
     - run: |
