@@ -1,0 +1,27 @@
+name: tea.xyz/pantry/actions/cache
+description: cache deno deps
+
+inputs:
+  cache-hash:
+    description: hash of the cache to use
+    required: true
+    default: ${{ hashFiles('**/deno.jsonc') }}
+
+runs:
+  using: composite
+  steps:
+    - run: |
+        if test "$RUNNER_OS" = "macOS"; then
+          echo "cache=~/Library/Caches/deno" >> $GITHUB_OUTPUT
+        else
+          echo "cache=~/.cache/deno" >> $GITHUB_OUTPUT
+        fi
+      id: os-cache
+      shell: sh
+
+    - uses: actions/cache@v3
+      with:
+        path: |
+          ~/.deno
+          ${{ steps.os-cache.outputs.cache }}
+        key: ${{ runner.os }}-deno-${{ inputs.cache-hash }}
