@@ -28,7 +28,7 @@ runs:
         # prevent pantry from reassigning TEA_PREFIX etc.
         srcroot: null
 
-    - uses: teaxyz/pantry.core/.github/actions/cache@cache-brewkit
+    - uses: teaxyz/pantry.core/.github/actions/cache@main
       with:
         cache-name: setup
 

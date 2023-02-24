@@ -30,7 +30,7 @@ inputs:
 runs:
   using: composite
   steps:
-    - uses: teaxyz/pantry.core/.github/actions/cache@cache-brewkit
+    - uses: teaxyz/pantry.core/.github/actions/cache@main
       with:
         cache-name: upload
 

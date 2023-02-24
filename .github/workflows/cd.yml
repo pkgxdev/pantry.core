@@ -14,7 +14,7 @@ jobs:
         with:
           repo: teaxyz/pantry.core
 
-      - uses: teaxyz/pantry.core/.github/actions/setup-brewkit@cache-brewkit
+      - uses: teaxyz/pantry.core/.github/actions/setup-brewkit@main
 
       - run: scripts/map-projects-to-githubs.ts
         env:
