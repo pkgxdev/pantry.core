@@ -32,7 +32,7 @@ runs:
   steps:
     - uses: teaxyz/pantry.core/.github/actions/cache@cache-brewkit
       with:
-        cache-hash: upload-${{ hashFiles('.github/actions/upload/upload.ts', 'deno.jsonc') }}
+        cache-name: upload
 
     - run: ${{ github.action_path }}/upload.ts
           --pkgs ${{ inputs.pkgs }}

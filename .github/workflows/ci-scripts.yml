@@ -14,5 +14,7 @@ jobs:
         with:
           srcroot: .github
       - uses: teaxyz/pantry.core/.github/actions/cache@cache-brewkit
+        with:
+          cache-name: ci-scripts
       - run: deno check --unstable **/*.ts
         working-directory: .github

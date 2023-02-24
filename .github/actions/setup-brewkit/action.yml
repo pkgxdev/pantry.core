@@ -30,7 +30,7 @@ runs:
 
     - uses: teaxyz/pantry.core/.github/actions/cache@cache-brewkit
       with:
-        cache-hash: setup-${{ hashFiles(format('{0}/tea.xyz/brewkit/v\*/deno.jsonc', steps.tea.outputs.prefix)) }}
+        cache-name: setup
 
     - run: |
         # if test -d "{{ github.workspace }}"/projects; then
