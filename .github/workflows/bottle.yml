@@ -35,7 +35,7 @@ jobs:
       built: ${{ env.built }}
       pr: ${{ env.PR }}
     steps:
-      - uses: teaxyz/pantry.core/.github/actions/setup-brewkit@fix-bottle.yml
+      - uses: teaxyz/pantry.core/.github/actions/setup-brewkit@main
         id: tea
 
       - uses: actions/download-artifact@v3
@@ -68,7 +68,7 @@ jobs:
         env:
           GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
 
-      - uses: teaxyz/pantry.core/.github/actions/bottle@fix-bottle.yml
+      - uses: teaxyz/pantry.core/.github/actions/bottle@main
         id: bottle-xz
         with:
           built: ${{ env.built }}
@@ -76,7 +76,7 @@ jobs:
           gpg-key-id: ${{ secrets.GPG_KEY_ID }}
           gpg-passphrase: ${{ secrets.GPG_PASSPHRASE }}
 
-      - uses: teaxyz/pantry.core/.github/actions/bottle@fix-bottle.yml
+      - uses: teaxyz/pantry.core/.github/actions/bottle@main
         id: bottle-gz
         with:
           built: ${{ env.built }}
@@ -109,7 +109,7 @@ jobs:
     needs: [bottle]
     runs-on: ubuntu-latest
     steps:
-      - uses: teaxyz/pantry.core/.github/actions/setup-brewkit@fix-bottle.yml
+      - uses: teaxyz/pantry.core/.github/actions/setup-brewkit@main
         with:
           prefix: ${{ github.workspace }}
 
@@ -124,7 +124,7 @@ jobs:
             echo "$file=$(cat $file)" >>$GITHUB_ENV
           done
 
-      - uses: teaxyz/pantry.core/.github/actions/upload@fix-bottle.yml
+      - uses: teaxyz/pantry.core/.github/actions/upload@main
         id: upload
         with:
           pkgs: ${{ needs.bottle.outputs.built }} ${{ needs.bottle.outputs.built }}
