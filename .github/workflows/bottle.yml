@@ -51,7 +51,7 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
-      - run: tar xzvf ${{ github.workspace }}/artifacts.tgz
+      - run: tar xzvf $GITHUB_WORKSPACE/artifacts.tgz
         working-directory: ${{ steps.tea.outputs.prefix }}
 
       - run: |
@@ -90,7 +90,7 @@ jobs:
 
           SRCS=$(echo $srcs | tr -d '~')
 
-          tar cf ${{ github.workspace }}/artifacts.tar \
+          tar cf $GITHUB_WORKSPACE/artifacts.tar \
             $SRCS \
             ${{ steps.bottle-gz.outputs.bottles }} \
             ${{ steps.bottle-xz.outputs.bottles }} \
