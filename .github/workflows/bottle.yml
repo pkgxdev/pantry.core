@@ -105,6 +105,8 @@ jobs:
     needs: [bottle]
     runs-on: ubuntu-latest
     steps:
+      - uses: teaxyz/pantry.core/.github/actions/setup-brewkit@fix-bottle.yml
+
       - uses: actions/download-artifact@v3
         with:
           name: ${{ inputs.platform }}-bottles
