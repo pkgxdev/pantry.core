@@ -35,7 +35,7 @@ jobs:
       built: ${{ env.built }}
       pr: ${{ env.PR }}
     steps:
-      - uses: teaxyz/pantry.core/.github/actions/setup-brewkit@main
+      - uses: teaxyz/pantry.core/.github/actions/setup-brewkit@fix-bottle.yml
 
       - uses: actions/download-artifact@v3
         if: ${{ inputs.new-version }}
@@ -58,11 +58,10 @@ jobs:
           done
 
       - run: |
-          source <(tea --sync --magic=bash --silent)
-          gpg-agent --daemon || true
+          tea +gnupg.org gpg-agent --daemon || true
           echo $GPG_PRIVATE_KEY | \
             base64 -d | \
-            gpg --import --batch --yes
+            tea +gnupg.org gpg --import --batch --yes
         env:
           GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
 
