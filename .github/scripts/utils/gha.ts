@@ -6,7 +6,7 @@ export async function set_output<T>(name: string, arr: T[], separator = " ") {
   const txt = `${name}=${value}`
   const outfile = Deno.env.get("GITHUB_OUTPUT")
   if (outfile) {
-    await Deno.writeTextFile(outfile, `${name}=${value}`, { append: true})
+    await Deno.writeTextFile(outfile, `${name}=${value}\n`, { append: true})
   }
   return await Deno.stdout.write(encode(`${txt}\n`))
 }

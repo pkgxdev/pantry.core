@@ -58,6 +58,7 @@ jobs:
           for file in built srcs; do
             echo "$file=$(cat $file)" >>$GITHUB_ENV
           done
+        working-directory: ${{ steps.tea.outputs.prefix }}
 
       - run: |
           tea +gnupg.org gpg-agent --daemon || true
@@ -71,7 +72,7 @@ jobs:
         id: bottle-xz
         with:
           built: ${{ env.built }}
-          compresson: xz
+          compression: xz
           gpg-key-id: ${{ secrets.GPG_KEY_ID }}
           gpg-passphrase: ${{ secrets.GPG_PASSPHRASE }}
 
@@ -79,7 +80,7 @@ jobs:
         id: bottle-gz
         with:
           built: ${{ env.built }}
-          compresson: gz
+          compression: gz
           gpg-key-id: ${{ secrets.GPG_KEY_ID }}
           gpg-passphrase: ${{ secrets.GPG_PASSPHRASE }}
 
