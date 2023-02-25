@@ -36,6 +36,7 @@ jobs:
       pr: ${{ env.PR }}
     steps:
       - uses: teaxyz/pantry.core/.github/actions/setup-brewkit@fix-bottle.yml
+        id: tea
 
       - uses: actions/download-artifact@v3
         if: ${{ inputs.new-version }}
@@ -93,6 +94,7 @@ jobs:
             ${{ steps.bottle-gz.outputs.bottles }} \
             ${{ steps.bottle-xz.outputs.bottles }} \
             bottles checksums signatures
+        working-directory: ${{ steps.tea.outputs.prefix }}
 
       - name: upload artifacts
         uses: actions/upload-artifact@v3
