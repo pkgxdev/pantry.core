@@ -52,6 +52,7 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
       - run: tar xzvf artifacts.tgz
+        working-directory: ${{ steps.tea.outputs.prefix }}
 
       - run: |
           for file in built srcs; do
