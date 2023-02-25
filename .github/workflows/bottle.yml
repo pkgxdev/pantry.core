@@ -124,7 +124,7 @@ jobs:
             echo "$file=$(cat $file)" >>$GITHUB_ENV
           done
 
-      - uses: teaxyz/pantry.core/.github/actions/upload@main
+      - uses: teaxyz/pantry.core/.github/actions/upload@fix-bottle.yml
         with:
           pkgs: ${{ needs.bottle.outputs.built }} ${{ needs.bottle.outputs.built }}
           srcs: ${{ needs.bottle.outputs.srcs }} ${{ needs.bottle.outputs.srcs }}
