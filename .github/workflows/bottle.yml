@@ -65,7 +65,7 @@ jobs:
         env:
           GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
 
-      - uses: teaxyz/pantry.core/.github/actions/bottle@main
+      - uses: teaxyz/pantry.core/.github/actions/bottle@fix-bottle.yml
         id: bottle-xz
         with:
           built: ${{ env.built }}
@@ -73,7 +73,7 @@ jobs:
           gpg-key-id: ${{ secrets.GPG_KEY_ID }}
           gpg-passphrase: ${{ secrets.GPG_PASSPHRASE }}
 
-      - uses: teaxyz/pantry.core/.github/actions/bottle@main
+      - uses: teaxyz/pantry.core/.github/actions/bottle@fix-bottle.yml
         id: bottle-gz
         with:
           built: ${{ env.built }}
