@@ -110,6 +110,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: teaxyz/pantry.core/.github/actions/setup-brewkit@fix-bottle.yml
+        with:
+          prefix: ${{ github.workspace }}
 
       - uses: actions/download-artifact@v3
         with:
