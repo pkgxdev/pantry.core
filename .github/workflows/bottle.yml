@@ -125,6 +125,7 @@ jobs:
           done
 
       - uses: teaxyz/pantry.core/.github/actions/upload@fix-bottle.yml
+        id: upload
         with:
           pkgs: ${{ needs.bottle.outputs.built }} ${{ needs.bottle.outputs.built }}
           srcs: ${{ needs.bottle.outputs.srcs }} ${{ needs.bottle.outputs.srcs }}
