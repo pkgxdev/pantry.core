@@ -18,4 +18,9 @@ build:
     make --jobs {{ hw.concurrency }} install
 
 test:
-  script: true  #FIXME
+  dependencies:
+    tea.xyz/gx/cc: c99
+  script: |
+    cc -lreadline fixture.c
+    test "$(echo "Hello, World!" | ./a.out)" = "test> Hello, World!
+    Hello, World!\\n"
