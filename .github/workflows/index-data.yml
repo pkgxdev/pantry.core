@@ -15,8 +15,8 @@ jobs:
       - uses: teaxyz/setup@v0
         with:
           srcroot: null
-      - uses: teaxyz/brewkit/.github/actions/cache@main
-      # TODO: convert to teaxyz/brewkit/.github/actions/index-packages
+      - uses: teaxyz/brewkit/actions/cache@v0
+      # TODO: convert to teaxyz/brewkit/actions/index-packages
       - run: ./.github/scripts/index-packages.ts ${{ inputs.projects }}
         env:
           TEA_PANTRY_PATH: ${{ github.workspace }}
