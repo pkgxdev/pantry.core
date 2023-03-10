@@ -16,6 +16,7 @@ jobs:
 
       - uses: teaxyz/brewkit/.github/actions/setup-brewkit@move-actions
 
+      # TODO: convert to teaxyz/brewkit/.github/actions/map-projects-to-githubs
       - run: .github/scripts/map-projects-to-githubs.ts
         env:
           WATCHER_URL: ${{ secrets.WATCHER_URL }}
