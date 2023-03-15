@@ -1,3 +1,3 @@
 ![tea](https://tea.xyz/banner.png)
 
-➡➡➡ https://github.com/teaxyz/pantry
+merged into: https://github.com/teaxyz/pantry
